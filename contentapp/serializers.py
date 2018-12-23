@@ -1,8 +1,9 @@
 from rest_framework import serializers
-from contentapp.models import WriterProfile
+from contentapp.models import UserSignup
 
-class WriterProfile_Serializer(serializers.ModelSerializer):
+
+class UserSignup_Serializer(serializers.ModelSerializer):
 
 	class Meta:
-		model = WriterProfile
-		fields = ('first_name', 'last_name', 'template_render')
+		model = UserSignup
+		fields = ('full_name', 'email')

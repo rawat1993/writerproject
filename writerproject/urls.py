@@ -17,9 +17,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
-
+from contentapp.admin import user_admin_site
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('super-admin/', admin.site.urls),
+    path('user-admin/', user_admin_site.urls),
     path('summernote/', include('django_summernote.urls')),
     path('api/',include('contentapp.urls'))    
 ]

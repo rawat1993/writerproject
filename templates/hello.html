@@ -1,1 +1,22 @@
-<htm><body><p><img src="/media/django-summernote/2018-12-17/3a704e17-28df-40ff-8d21-2792090753c6.jpeg\" style=\"width: 640px;\"><br></p><p>Enjoy this Yoooooooo</p><p><a class=\"irc_mil i3597\" rel=\"noopener\" jsaction=\"mousedown:irc.rl;focus:irc.rl\" data-noload=\"\" target=\"_blank\" tabindex=\"0\" data-ved=\"2ahUKEwjvpqC-0affAhVRbysKHbmTDiMQjRx6BAgBEAU\" href=\"http://www.nptechforgood.com/2010/07/20/10-blog-content-ideas-for-nonprofit-organizations/\" style=\"border: 0px; color: rgb(102, 0, 153); text-decoration-line: underline; font-family: arial, sans-serif; font-size: small; text-align: center; background-color: rgb(34, 34, 34);\"><img class=\"irc_mi\" src=\"http://nonprofitorgs.files.wordpress.com/2010/07/blog.jpg\" alt=\"Image result for blogs image\" width=\"500\" height=\"326\" style=\"background-color: rgb(255, 255, 255); background-image: -webkit-linear-gradient(45deg, rgb(239, 239, 239) 25%, transparent 25%, transparent 75%, rgb(239, 239, 239) 75%, rgb(239, 239, 239)), -webkit-linear-gradient(45deg, rgb(239, 239, 239) 25%, transparent 25%, transparent 75%, rgb(239, 239, 239) 75%, rgb(239, 239, 239)); background-position: 0px 0px, 10px 10px; background-size: 21px 21px; box-shadow: rgba(0, 0, 0, 0.65) 0px 5px 35px; margin-top: 21px;\"></a><br></p></body></html>
+<htm><body>
+
+ <h2>New post</h2>
+ <a href="">User profile add or edit</a><br>
+ <a href="http://www.yahoo.com">User Blog</a><br>
+ <a href="http://www.yahoo.com">User Script</a><br>
+ <a href="http://www.yahoo.com">User Poem</a><br>
+    {% if form %}
+    <form method="post" class="post-form">
+    	{% csrf_token %}	
+        {{ form|safe }}
+        <button type="submit" class="save btn btn-default">Save</button>
+    </form>
+    {% endif %}
+        
+    {% if user %}
+    <ul>
+    	<li>{{ user }}</li>
+    </ul>            
+    {% endif %}       
+</body></html>
+

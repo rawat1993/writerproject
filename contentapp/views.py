@@ -1,19 +1,29 @@
-from django.shortcuts import render
+from django.shortcuts import render,render_to_response
 
 # Create your views here.
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import HttpResponse
 from rest_framework import status
-from contentapp.models import WriterProfile
-from contentapp.serializers import WriterProfile_Serializer
+from contentapp.models import UserSignup
+from contentapp.serializers import UserSignup_Serializer
 # Create your views here.
+from django_summernote.widgets import SummernoteInplaceWidget
+from contentapp.forms import UserSignupForm
 
+class UserSignupView(APIView):
 
-class WriterProfileView(viewsets.ViewSet):
-    queryset = WriterProfile.objects.all()
-    serializer_class = WriterProfile_Serializer
+    def get(self,request):
+        print('hellooo')
+        queryset = UserSignup.objects.all()
+        print("yeeee==>",queryset)
+        # UserSignup.objects.get()
+        form = UserSignupForm()
+        # return render_to_response('hello.html',{'form':form,'user':queryset[0].full_name})
+        return render_to_response('hello.html',{'user':queryset[0].full_name})
 
-    def list(self,request):
-        serializer = WriterProfile_Serializer(self.queryset,many=True)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+    def post(self,request):
+    	UserSignup.objects.create(full_name='rakesh',email='rakesh@gmail.com',city='raltam',state='xyz',user_text=request.POST.get('foo'))
+    	return Response('success',status=status.HTTP_200_OK)
+
