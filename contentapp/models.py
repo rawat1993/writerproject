@@ -71,7 +71,7 @@ class UserBlogTitle(models.Model):
 
 class UserBlog(models.Model):
     title = models.ForeignKey(UserBlogTitle,on_delete=models.CASCADE,verbose_name = 'Select Your Blog')
-    blog_part = models.CharField(max_length=15,help_text='fill your blog part within 15 chars max like-> part 1')  
+    blog_part = models.CharField(max_length=15,help_text='fill your blog part without using space within 15 chars max like-> part1')
     content = models.TextField('Write Your Blog',help_text='Write your blog using images')
     total_hits = models.BigIntegerField('Total hits for this page',default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -105,7 +105,7 @@ class UserStoryTitle(models.Model):
 
 class UserStory(models.Model):
     title = models.ForeignKey(UserStoryTitle, on_delete=models.CASCADE,verbose_name = 'Select Your Story')
-    story_seen_no = models.CharField('Story Seen Number',max_length=15,help_text='fill your seen number max 15 chars allowed like-> seen 1')
+    story_seen_no = models.CharField('Story Seen Number',max_length=15,help_text='fill your seen number without using spaces max 15 chars allowed like-> seen1')
     content = models.TextField('Write Your Story',help_text='Write your stroy seen using images')
     total_hits = models.BigIntegerField('Total hits for this page',default=0)   
     created_at = models.DateTimeField(auto_now_add=True)

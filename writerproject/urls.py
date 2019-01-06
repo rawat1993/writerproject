@@ -30,7 +30,7 @@ urlpatterns = [
     re_path(r'^(?P<post_fix_value>\w+)/$', user_profile_views.UserProfileView.as_view()),
     re_path(r'^(?P<post_fix_value>\w+)/(?P<subject>\w+)/$', user_profile_views.SubjectView.as_view()),
     re_path(r'^(?P<post_fix_value>\w+)/(?P<subject>\w+)/(?P<title>\w+)/$', user_profile_views.TitleView.as_view()),
-    re_path(r'^(?P<post_fix_value>\w+)/(?P<subject>\w+)/(?P<title>\w+)/(?P<seen>\w+)/$', user_profile_views.FifthUserProfileView.as_view()),
+    re_path(r'^(?P<post_fix_value>\w+)/(?P<subject>\w+)/(?P<title>\w+)/(?P<page>\w+)/$', user_profile_views.PageForTitleView.as_view()),
 ]
 
 if settings.DEBUG:

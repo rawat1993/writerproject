@@ -4,6 +4,9 @@ USER_NOT_FOUND = "User not found"
 USER_REGISTERED = "User has been successfully registered"
 USER_ALREADY_REGISTERED = "User already registered with us"
 URL_NOT_CORRECT = "Please correct your URL"
+PAGE_NOT_FOUND = "Page not found for this {}"
+TITLE_NOT_FOUND = "{} title is not correct for this user"
+NOT_AVAILABLE = "{}'s are not available for this user"
 #########################################
 # Mail setup
 

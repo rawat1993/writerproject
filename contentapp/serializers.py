@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from contentapp.models import UserSignup,UserStoryTitle,UserPoem,UserBlogTitle,UserStory
+from contentapp.models import UserSignup,UserStoryTitle,UserPoem,UserBlogTitle,UserStory,UserBlog
 
 
 class UserSignup_Serializer(serializers.ModelSerializer):
@@ -27,8 +27,22 @@ class UserBlogTitleSerializer(serializers.ModelSerializer):
 		model = UserBlogTitle
 		fields = ('id','title', 'short_description','search_by','default_image')
 
+class UserBlogSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = UserBlog
+		fields = ('id','content','blog_part')
+
+
 class UserPoemSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = UserPoem
-		fields = ('id','title', 'short_description','search_by','default_image','content')
+		fields = ('id','title', 'short_description','search_by','default_image')
+
+class UserPoemContentSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = UserPoem
+		fields = ('id','title', 'short_description','default_image','content')
+
