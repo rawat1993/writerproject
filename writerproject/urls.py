@@ -26,6 +26,7 @@ urlpatterns = [
     path('summernote/', include('django_summernote.urls')),
     path('api/',include('contentapp.urls')),
     path('activate/',views.user_activation),
+    path('url-postfix-availability/',views.url_postfix_availability),
     # re_path(r'(?P<url_post_fix>\w+)(?:/(?P<subject>[\w-]+))(?:/(?P<title>[\w-]+))?/$', user_profile_views.SecondUserProfileView.as_view(),name='user-profile'),    
     re_path(r'^(?P<post_fix_value>\w+)/$', user_profile_views.UserProfileView.as_view()),
     re_path(r'^(?P<post_fix_value>\w+)/(?P<subject>\w+)/$', user_profile_views.SubjectView.as_view()),

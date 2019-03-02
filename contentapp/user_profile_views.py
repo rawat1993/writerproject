@@ -30,6 +30,7 @@ class UserProfileView(APIView):
                  return Response(POSTFIX_STATUS,status=status.HTTP_401_UNAUTHORIZED)
 
             user_obj = UserSignup.objects.get(email=user_email)
+            print("===============>",user_obj.cover_photo)
             serializer = UserSignup_Serializer(user_obj)
             return Response(serializer.data,status=status.HTTP_200_OK)
         except Exception as error:

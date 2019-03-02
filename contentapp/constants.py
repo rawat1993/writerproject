@@ -24,6 +24,15 @@ BLOG = "blog"
 POEM = "poem"
 
 
+############# Url PostFix Availability Message ################
+POSTFIX_NOT_AVAILABLE = "not available"
+AVAILABLE = "available"
+
+################# Added IP and Port Detail ####################
+IP = '127.0.0.1'
+PORT = '8080'
+
+
 
 
 
