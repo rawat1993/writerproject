@@ -7,7 +7,8 @@ from contentapp.models import UserSignup,UrlPostfixHistory
 from contentapp.serializers import UserSignup_Serializer
 from django.contrib.auth.models import User
 from .constants import *
-from django.core.mail import send_mail
+#from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from rest_framework.decorators import api_view
 
 class UserSignupView(APIView):
@@ -27,6 +28,9 @@ class UserSignupView(APIView):
             user_obj[0].full_name = full_name
             user_obj[0].save()
 
+            msg = EmailMessage(EMAIL_SUBJECTS,EMAIL_CONTENT.format(full_name,email),to=[email])
+            msg.send()
+
             # create objects in User model to admin login
             super_user_obj[0].set_password(password)
             super_user_obj[0].is_superuser = True
@@ -39,13 +43,14 @@ class UserSignupView(APIView):
             postfix_obj[0].url_postfix = url_postfix
             postfix_obj[0].save()
 
-            send_mail(EMAIL_SUBJECTS,EMAIL_CONTENT.format(full_name,email), 'rawatajay977@gmail.com', [email])
+            #msg = EmailMessage(EMAIL_SUBJECTS,EMAIL_CONTENT.format(full_name,email),to=[email])
+            #msg.send()
             return Response(MAIL_SUCCESSFULLY_SENT,status=status.HTTP_201_CREATED)
         except Exception as error:
             import os,sys
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            print(exc_type, fname, exc_tb.tb_lineno)           
+            print(exc_type, fname, exc_tb.tb_lineno)
             return Response(MAIL_FAILD,status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 

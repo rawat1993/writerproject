@@ -24,7 +24,7 @@ SECRET_KEY = '&i2#ko#!1^v!$9^jjbavl%atvfu1znx$v8+qd92_q&%bz$je6k'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -161,13 +161,14 @@ REST_FRAMEWORK = {
 
 
 # Sending mail setup
-
+#EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+#DEFAULT_FROM_EMAIL = 'rawatajay977@gmail.com'
+#SERVER_EMAIL = 'rawatajay977@gmail.com'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'rawatajay977@gmail.com'
-EMAIL_HOST_PASSWORD = 'Akkjg@111'
+EMAIL_HOST_USER = 'writercreativity612@gmail.com'
+EMAIL_HOST_PASSWORD = 'akkjg111'
 EMAIL_USE_TLS = True
-
 
 
 from corsheaders.defaults import default_headers

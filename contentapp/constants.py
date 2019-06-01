@@ -12,7 +12,7 @@ NOT_AVAILABLE = "{}'s are not available for this user"
 
 MAIL_FAILD = "Mail not sent Network issue"
 EMAIL_SUBJECTS = "Writer | Activate account"
-EMAIL_CONTENT = "Hi {}, \n\n We sent you activation link to setup your account with us.\n http://127.0.0.1:8080/activate/?token={} \n\n\n Regards,\nWriting Team"
+EMAIL_CONTENT = "Hi {}, \n\n We sent you activation link to setup your account with us.\n http://18.188.167.66:8000/activate/?token={} \n\n\n Regards,\nWriting Team"
 
 ############## User Profile List #################
 USER_POSTFIX_NOT_FOUND = "User Postfix String not found"
@@ -29,9 +29,11 @@ POSTFIX_NOT_AVAILABLE = "not available"
 AVAILABLE = "available"
 
 ################# Added IP and Port Detail ####################
-IP = '127.0.0.1'
-PORT = '8080'
+IP = '18.188.167.66'
+PORT = '8000'
 
+##############################################################
+HOST_NAME = 'http://18.188.167.66:8000'
 
 
 

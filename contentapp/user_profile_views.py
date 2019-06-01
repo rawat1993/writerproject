@@ -6,7 +6,8 @@ from contentapp.models import UrlPostfixHistory,UserSignup,UserStoryTitle,UserBl
 from contentapp.serializers import UserSignup_Serializer,UserStoryTitleSerializer,UserBlogTitleSerializer,UserPoemSerializer,UserStorySerializer,UserPoemContentSerializer,UserBlogSerializer
 from .constants import *
 from django.db.models import Q
-
+from django.core.paginator import Paginator
+import re
 
 def user_status(post_fix_value):
     try:
@@ -30,9 +31,20 @@ class UserProfileView(APIView):
                  return Response(POSTFIX_STATUS,status=status.HTTP_401_UNAUTHORIZED)
 
             user_obj = UserSignup.objects.get(email=user_email)
-            print("===============>",user_obj.cover_photo)
             serializer = UserSignup_Serializer(user_obj)
-            return Response(serializer.data,status=status.HTTP_200_OK)
+            story_status = "no"
+            blog_status = "no"
+            poem_status = "no"
+            story_list = UserStoryTitle.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC'))
+            if story_list:
+               story_status = "yes"
+            blog_list = UserBlogTitle.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC'))
+            if blog_list:
+               blog_status = "yes"
+            poem_list = UserPoem.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC'))
+            if poem_list:
+               poem_status = "yes"
+            return Response({"data":serializer.data,"story_status":story_status,"blog_status":blog_status,"poem_status":poem_status},status=status.HTTP_200_OK)
         except Exception as error:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -42,33 +54,39 @@ class SubjectView(APIView):
     def get(self,request,**kwargs):
         try:
             post_fix = kwargs['post_fix_value']
+            requested_page_no = request.GET.get('page',1)
             user_email = user_status(post_fix)
             if user_email == "NOT_FOUND":
                 return Response(USER_POSTFIX_NOT_FOUND,status=status.HTTP_404_NOT_FOUND)
             elif user_email == "USER_BLOCKED":
                  return Response(POSTFIX_STATUS,status=status.HTTP_401_UNAUTHORIZED)
-            
             subject = kwargs['subject']
             if subject==STORY:
-               story_list = UserStoryTitle.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC'))
+               story_list = UserStoryTitle.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC')).order_by('-created_at')
                if not story_list:
-                  return Response(NOT_AVAILABLE.format(STORY),status=status.HTTP_404_NOT_FOUND)               
-               serializer = UserStoryTitleSerializer(story_list, many=True)
-               return Response(serializer.data,status=status.HTTP_200_OK)
+                  return Response(NOT_AVAILABLE.format(STORY),status=status.HTTP_404_NOT_FOUND)
+               page_obj = Paginator(story_list, 6)
+               requested_page = page_obj.page(requested_page_no)
+               serializer = UserStoryTitleSerializer(requested_page, many=True)
+               return Response({"data":serializer.data,"total_pages":page_obj.num_pages},status=status.HTTP_200_OK)
 
             elif subject==BLOG:
-               blog_list = UserBlogTitle.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC'))
+               blog_list = UserBlogTitle.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC')).order_by('-created_at')
                if not blog_list:
-                  return Response(NOT_AVAILABLE.format(BLOG),status=status.HTTP_404_NOT_FOUND)                
-               serializer = UserBlogTitleSerializer(blog_list, many=True)
-               return Response(serializer.data,status=status.HTTP_200_OK)
+                  return Response(NOT_AVAILABLE.format(BLOG),status=status.HTTP_404_NOT_FOUND)
+               page_obj = Paginator(blog_list, 6)
+               requested_page = page_obj.page(requested_page_no)
+               serializer = UserBlogTitleSerializer(requested_page, many=True)
+               return Response({"data":serializer.data,"total_pages":page_obj.num_pages},status=status.HTTP_200_OK)
 
             elif subject==POEM:
-               poem_list = UserPoem.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC'))
+               poem_list = UserPoem.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC')).order_by('-created_at')
                if not poem_list:
-                  return Response(NOT_AVAILABLE.format(POEM),status=status.HTTP_404_NOT_FOUND)               
-               serializer = UserPoemSerializer(poem_list, many=True)
-               return Response(serializer.data,status=status.HTTP_200_OK)              
+                  return Response(NOT_AVAILABLE.format(POEM),status=status.HTTP_404_NOT_FOUND)
+               page_obj = Paginator(poem_list, 6)
+               requested_page = page_obj.page(requested_page_no)
+               serializer = UserPoemSerializer(requested_page, many=True)
+               return Response({"data":serializer.data,"total_pages":page_obj.num_pages},status=status.HTTP_200_OK)
 
             return Response(URL_NOT_CORRECT,status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
@@ -79,7 +97,6 @@ class TitleView(APIView):
     def get(self,request,**kwargs):
         try:
             post_fix = kwargs['post_fix_value']
-            print(kwargs,"000000000000")
             user_email = user_status(post_fix)
             if user_email == "NOT_FOUND":
                 return Response(USER_POSTFIX_NOT_FOUND,status=status.HTTP_404_NOT_FOUND)
@@ -89,25 +106,30 @@ class TitleView(APIView):
             subject = kwargs['subject']
             title = kwargs['title']
             if subject==STORY:
-               user_stroy_detail = UserStory.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__privacy='PUBLIC')))
+               user_stroy_detail = UserStory.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__privacy='PUBLIC'))).order_by('created_at')
                if not user_stroy_detail:
-                  return Response(TITLE_NOT_FOUND.format(title),status=status.HTTP_404_NOT_FOUND)               
-               serializer = UserStorySerializer(user_stroy_detail, many=True)
-               return Response(serializer.data,status=status.HTTP_200_OK)
+                  return Response(TITLE_NOT_FOUND.format(title),status=status.HTTP_404_NOT_FOUND)
+               seen_list = user_stroy_detail.values_list('story_seen_no',flat=True)
+               #serializer = UserStorySerializer(user_stroy_detail, many=True)
+               data = append_baseUrl(user_stroy_detail,"story")
+               return Response({"data":data,"seen_list":seen_list},status=status.HTTP_200_OK)
 
             elif subject==BLOG:
-               blog_content = UserBlog.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__privacy='PUBLIC')))
+               blog_content = UserBlog.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__privacy='PUBLIC'))).order_by('created_at')
                if not blog_content:
-                  return Response(TITLE_NOT_FOUND.format(title),status=status.HTTP_404_NOT_FOUND)               
-               serializer = UserBlogSerializer(blog_content, many=True)
-               return Response(serializer.data,status=status.HTTP_200_OK)
+                  return Response(TITLE_NOT_FOUND.format(title),status=status.HTTP_404_NOT_FOUND)
+               blog_part_list = blog_content.values_list('blog_part',flat=True)
+               #serializer = UserBlogSerializer(blog_content, many=True)
+               data = append_baseUrl(blog_content,"blog")
+               return Response({"data":data,"seen_list":blog_part_list},status=status.HTTP_200_OK)
 
             elif subject==POEM:
                poem_content = UserPoem.objects.filter(Q(author__username=user_email) & (Q(search_by=title) & Q(privacy='PUBLIC')))
                if not poem_content:
-                  return Response(TITLE_NOT_FOUND.format(title),status=status.HTTP_404_NOT_FOUND)               
-               serializer = UserPoemContentSerializer(poem_content, many=True)
-               return Response(serializer.data,status=status.HTTP_200_OK)       
+                  return Response(TITLE_NOT_FOUND.format(title),status=status.HTTP_404_NOT_FOUND)
+               #serializer = UserPoemContentSerializer(poem_content, many=True)
+               data = append_baseUrl(poem_content,"poem")
+               return Response({"data":data},status=status.HTTP_200_OK)
 
             return Response(URL_NOT_CORRECT,status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
@@ -115,12 +137,32 @@ class TitleView(APIView):
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+def append_baseUrl(queryset_obj,object_type):
+    updated_list = []
+    for obj in queryset_obj:
+        content_data = obj.content
+        r = re.compile('(?<=src=").*?(?=")')
+        src_list = r.findall(content_data)
+        if src_list:
+           for src in src_list:
+               if src.startswith("/media"):
+                  content_data = content_data.replace(
+                                src, HOST_NAME + src)
+        if object_type=="story":
+           updated_list.append({"id":obj.id,"content":content_data,"story_seen_no":obj.story_seen_no})
+        elif object_type=="blog":
+           updated_list.append({"id":obj.id,"content":content_data,"blog_part":obj.blog_part})
+        elif object_type=="poem":
+           updated_list.append({"id":obj.id,"title":obj.title,"short_description":obj.short_description,"content":content_data})
+
+    return updated_list
+
+
 class PageForTitleView(APIView):
 
     def get(self,request,**kwargs):
         try:
             post_fix = kwargs['post_fix_value']
-            print(kwargs,"000000000000")
             user_email = user_status(post_fix)
             if user_email == "NOT_FOUND":
                 return Response(USER_POSTFIX_NOT_FOUND,status=status.HTTP_404_NOT_FOUND)
@@ -136,21 +178,44 @@ class PageForTitleView(APIView):
                   page_obj = user_stroy_detail.get(story_seen_no=page)
                else:
                 return Response(TITLE_NOT_FOUND.format(title),status=status.HTTP_404_NOT_FOUND)
-                  
+
                serializer = UserStorySerializer(page_obj)
                return Response(serializer.data,status=status.HTTP_200_OK)
 
-            # elif subject==BLOG:
-            #    blog_content = UserBlog.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__privacy='PUBLIC')))
-            #    serializer = UserBlogSerializer(blog_content, many=True)
-            #    return Response(serializer.data,status=status.HTTP_200_OK)
+            elif subject==BLOG:
+                blog_content = UserBlog.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__privacy='PUBLIC')))
+                if blog_content:
+                   page_obj = blog_content.get(blog_part=page)
+                else:
+                   return Response(TITLE_NOT_FOUND.format(title),status=status.HTTP_404_NOT_FOUND)
+
+                serializer = UserBlogSerializer(page_obj)
+                return Response(serializer.data,status=status.HTTP_200_OK)
 
             # elif subject==POEM:
             #    poem_content = UserPoem.objects.filter(Q(author__username=user_email) & (Q(search_by=title) & Q(privacy='PUBLIC')))
             #    serializer = UserPoemContentSerializer(poem_content, many=True)
-            #    return Response(serializer.data,status=status.HTTP_200_OK)        
+            #    return Response(serializer.data,status=status.HTTP_200_OK)
 
             return Response(URL_NOT_CORRECT,status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
             print("Errrror==>",error)
             return Response(PAGE_NOT_FOUND.format(page),status=status.HTTP_404_NOT_FOUND)
+
+
+class TitleDetail(APIView):
+
+    def get(self,request):
+        search_by = request.GET.get('search_by')
+        subject = request.GET.get('subject')
+        if subject == "story":
+           story_detail = UserStoryTitle.objects.get(search_by=search_by)
+           serializer = UserStoryTitleSerializer(story_detail)
+        elif subject == "blog":
+           blog_detail = UserBlogTitle.objects.get(search_by=search_by)
+           serializer = UserBlogTitleSerializer(blog_detail)
+        elif subject == "poem":
+           poem_detail = UserPoem.objects.get(search_by=search_by)
+           serializer = UserPoemSerializer(poem_detail)
+
+        return Response(serializer.data,status=status.HTTP_200_OK)

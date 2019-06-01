@@ -53,7 +53,8 @@ class UserBlogTitle(models.Model):
     search_by = models.CharField(max_length=20,null=True,blank=True,editable=False)
     title = models.CharField('Blog Title',max_length=255,unique=True,help_text='write your blog title')
     short_description = models.CharField(max_length=255,null=True,blank=True,help_text="write short description about your Blog")
-    default_image = models.ImageField(help_text="set default image for your blog", upload_to="imgae_path/")    
+    default_image = models.ImageField(help_text="set default image for your blog", upload_to="imgae_path/")
+    title_status = models.BooleanField(help_text="set false if you dont want to show title with your default image",default=True)
     BLOG_CHOICES = (
         ('PUBLIC', 'Public'),
         ('PRIVATE', 'Private'),
@@ -88,7 +89,8 @@ class UserStoryTitle(models.Model):
     search_by = models.CharField(max_length=20,null=True,blank=True,editable=False)
     title = models.CharField('Story Title',max_length=100,unique=True,help_text='write your story title')
     short_description = models.CharField('Story Short Description',max_length=255,null=True,blank=True,help_text='Write short description about your story')
-    default_image = models.ImageField(help_text="set default image for your story", upload_to="imgae_path/")    
+    default_image = models.ImageField(help_text="set default image for your story", upload_to="imgae_path/")
+    title_status = models.BooleanField(help_text="set false if you dont want to show title with your default image",default=True)
     STORY_CHOICES = (
         ('PUBLIC', 'Public'),
         ('PRIVATE', 'Private'),
@@ -120,6 +122,7 @@ class UserPoem(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE,editable=False)
     search_by = models.CharField(max_length=20,null=True,blank=True,editable=False)
     title = models.CharField('Poem Title',max_length=100,unique=True,help_text='write your poem title')
+    title_status = models.BooleanField(help_text="set false if you dont want to show title with your default image",default=True)
     short_description = models.CharField('Poem Short Description',max_length=255,null=True,blank=True,help_text='Write short description about your poem')
     default_image = models.ImageField(help_text="set default image for your poem", upload_to="imgae_path/")    
     content = models.TextField('Write Your Poem',help_text='Write your poem using images')
