@@ -31,7 +31,8 @@ urlpatterns = [
     re_path(r'^(?P<post_fix_value>\w+)/(?P<subject>\w+)/$', user_profile_views.SubjectView.as_view()),
     re_path(r'^(?P<post_fix_value>\w+)/(?P<subject>\w+)/(?P<title>\w+)/$', user_profile_views.TitleView.as_view()),
     re_path(r'^(?P<post_fix_value>\w+)/(?P<subject>\w+)/(?P<title>\w+)/(?P<page>\w+)/$', user_profile_views.PageForTitleView.as_view()),
-    path('basic-detail/', user_profile_views.TitleDetail.as_view())
+    path('basic-detail/', user_profile_views.TitleDetail.as_view()),
+    path('about-us/', views.about_us_page)
 ]
 
 if settings.DEBUG:

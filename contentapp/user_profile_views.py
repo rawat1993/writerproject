@@ -14,7 +14,7 @@ def user_status(post_fix_value):
        url_postfix_obj = UrlPostfixHistory.objects.get(url_postfix=post_fix_value)
        if url_postfix_obj.status == "BLOCK":
           return "USER_BLOCKED"
-       user_email = url_postfix_obj.user_email 
+       user_email = url_postfix_obj.user_email
        return user_email
     except Exception as error:
         return "NOT_FOUND"
@@ -154,6 +154,8 @@ def append_baseUrl(queryset_obj,object_type):
            updated_list.append({"id":obj.id,"content":content_data,"blog_part":obj.blog_part})
         elif object_type=="poem":
            updated_list.append({"id":obj.id,"title":obj.title,"short_description":obj.short_description,"content":content_data})
+        elif object_type=="about-us":
+           updated_list.append({"content":content_data})
 
     return updated_list
 
@@ -208,7 +210,15 @@ class TitleDetail(APIView):
     def get(self,request):
         search_by = request.GET.get('search_by')
         subject = request.GET.get('subject')
-        if subject == "story":
+        url_postfix = request.GET.get('user')
+        user_email = user_status(url_postfix)
+
+        if user_email == "NOT_FOUND":
+              return Response(USER_POSTFIX_NOT_FOUND,status=status.HTTP_404_NOT_FOUND)
+        elif user_email == "USER_BLOCKED":
+              return Response(POSTFIX_STATUS,status=status.HTTP_401_UNAUTHORIZED)
+
+        elif subject == "story":
            story_detail = UserStoryTitle.objects.get(search_by=search_by)
            serializer = UserStoryTitleSerializer(story_detail)
         elif subject == "blog":
@@ -219,3 +229,4 @@ class TitleDetail(APIView):
            serializer = UserPoemSerializer(poem_detail)
 
         return Response(serializer.data,status=status.HTTP_200_OK)
+

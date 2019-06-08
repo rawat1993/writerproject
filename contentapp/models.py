@@ -25,13 +25,14 @@ class UserSignup(models.Model):
 
 class UrlPostfixHistory(models.Model):
     user_email = models.CharField(max_length=70,null=True,blank=True)
-    url_postfix = models.CharField(max_length=30,null=True,blank=True,unique=True)
+    url_postfix = models.CharField(max_length=30,null=True,blank=True)
     URL_POSTFIX_STATUS = (
         ('BLOCK', 'Blocked'),
         ('UNBLOCK', 'Active'),
-    )   
+    )
     status = models.CharField("Super admin Action",max_length=10, choices=URL_POSTFIX_STATUS, default='UNBLOCK')
-    action_taken_by = models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)   
+    url_postfix_status = models.BooleanField(default=False,editable=False)
+    action_taken_by = models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True,editable=False)
     updated_at = models.DateTimeField(auto_now=True,editable=False)
     def __str__(self):
@@ -58,7 +59,7 @@ class UserBlogTitle(models.Model):
     BLOG_CHOICES = (
         ('PUBLIC', 'Public'),
         ('PRIVATE', 'Private'),
-    )   
+    )
     privacy = models.CharField(max_length=10, choices=BLOG_CHOICES, default='PUBLIC')
     total_hits = models.BigIntegerField('Total hits for this Blog',default=0) 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -72,7 +73,7 @@ class UserBlogTitle(models.Model):
 
 class UserBlog(models.Model):
     title = models.ForeignKey(UserBlogTitle,on_delete=models.CASCADE,verbose_name = 'Select Your Blog')
-    blog_part = models.CharField(max_length=15,help_text='fill your blog part without using space within 15 chars max like-> part1')
+    blog_part = models.CharField("Heading",max_length=25,help_text='write heading for this blog -> Maximum 25 characters allowed')
     content = models.TextField('Write Your Blog',help_text='Write your blog using images')
     total_hits = models.BigIntegerField('Total hits for this page',default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -107,9 +108,9 @@ class UserStoryTitle(models.Model):
 
 class UserStory(models.Model):
     title = models.ForeignKey(UserStoryTitle, on_delete=models.CASCADE,verbose_name = 'Select Your Story')
-    story_seen_no = models.CharField('Story Seen Number',max_length=15,help_text='fill your seen number without using spaces max 15 chars allowed like-> seen1')
+    story_seen_no = models.CharField('Heading',max_length=25,help_text='write a heading for this scene -> Maximum 25 characters allowed')
     content = models.TextField('Write Your Story',help_text='Write your stroy seen using images')
-    total_hits = models.BigIntegerField('Total hits for this page',default=0)   
+    total_hits = models.BigIntegerField('Total hits for this page',default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
@@ -140,4 +141,12 @@ class UserPoem(models.Model):
         verbose_name_plural = 'Add Poem'
 
 
-
+class AboutUs(models.Model):
+    about_us = models.CharField(max_length=200,null=True,blank=True)
+    content = models.TextField('Add about-us page',help_text='Add about-us content')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.about_us
+    class Meta:
+        verbose_name_plural = 'Add About-Us'

@@ -27,8 +27,13 @@ class UrlPostfixHistoryadmin(admin.ModelAdmin):
               super_user_obj.is_active = True
               super_user_obj.save()
 
+class AboutUsAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
+    summernote_fields = 'content'
+
 admin.site.register(UrlPostfixHistory,UrlPostfixHistoryadmin)
 admin.site.register(LoggingHistory)
+admin.site.register(AboutUs, AboutUsAdmin)
+
 
 # Settings for User-admin
 # User independent admin sites
@@ -42,9 +47,9 @@ class UserBlogAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
     summernote_fields = 'content'
     list_display = ('blog_part','title','total_hits')
     readonly_fields = ["total_hits"]
-    def save_model(self, request, obj, form, change):
-           obj.blog_part="".join((obj.blog_part).split())
-           obj.save()
+    #def save_model(self, request, obj, form, change):
+    #       obj.blog_part="".join((obj.blog_part).split())
+    #       obj.save()
 
     def get_queryset(self, request):
         qs = super(UserBlogAdmin, self).get_queryset(request)
@@ -62,9 +67,9 @@ class UserStoryAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
     summernote_fields = 'content'
     list_display = ('story_seen_no','title','total_hits') 
     readonly_fields = ["total_hits"]
-    def save_model(self, request, obj, form, change):
-        obj.story_seen_no="".join((obj.story_seen_no).split())
-        obj.save()
+    #def save_model(self, request, obj, form, change):
+    #    obj.story_seen_no="".join((obj.story_seen_no).split())
+    #    obj.save()
     def get_queryset(self, request):
         qs = super(UserStoryAdmin, self).get_queryset(request)
         # if request.user.is_superuser:
