@@ -19,10 +19,11 @@ from django.conf.urls.static import static
 from django.conf import settings
 from contentapp.admin import user_admin_site
 from contentapp import views,user_profile_views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('super-admin/', admin.site.urls),
-    path('user-admin/', user_admin_site.urls),
+    path('accounts/login/', user_admin_site.urls),
     path('summernote/', include('django_summernote.urls')),
     path('api/',include('contentapp.urls')),
     path('activate/',views.user_activation),
@@ -32,8 +33,21 @@ urlpatterns = [
     re_path(r'^(?P<post_fix_value>\w+)/(?P<subject>\w+)/(?P<title>\w+)/$', user_profile_views.TitleView.as_view()),
     re_path(r'^(?P<post_fix_value>\w+)/(?P<subject>\w+)/(?P<title>\w+)/(?P<page>\w+)/$', user_profile_views.PageForTitleView.as_view()),
     path('basic-detail/', user_profile_views.TitleDetail.as_view()),
-    path('about-us/', views.about_us_page)
+    path('about-us/', views.about_us_page),
+    path('home-detail/', views.home_page_detail),
+    path('rating-email/', views.rating_email),
+    path('verify-otp/', views.verify_otp),
+    path('rating-detail/', views.rating_detail),
+
+    # Reset Password urls
+    path('account-reset-password/',auth_views.PasswordResetView.as_view(),name='admin_password_reset'),
+    path('reset-password-done/',auth_views.PasswordResetDoneView.as_view(),name='password_reset_done'),
+    path('reset-confirm/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(),name='password_reset_confirm'),
+    path( 'reset-done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete')
+
 ]
 
-if settings.DEBUG:
-     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+#if settings.DEBUG:
+#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

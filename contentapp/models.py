@@ -97,7 +97,22 @@ class UserStoryTitle(models.Model):
         ('PRIVATE', 'Private'),
     )
     privacy = models.CharField(max_length=10, choices=STORY_CHOICES, default='PUBLIC')
-    total_hits = models.BigIntegerField('Total hits for this Stroy',default=0) 
+    total_hits = models.BigIntegerField('Total hits for this Stroy',default=0)
+
+    one_star_count = models.IntegerField(default=0,editable=False)
+    two_star_count = models.IntegerField(default=0,editable=False)
+    three_star_count = models.IntegerField(default=0,editable=False)
+    four_star_count = models.IntegerField(default=0,editable=False)
+    five_star_count = models.IntegerField(default=0,editable=False)
+    total_reviewer = models.IntegerField(default=0,editable=False)
+
+    one_star_avg = models.IntegerField(default=0,editable=False)
+    two_star_avg = models.IntegerField(default=0,editable=False)
+    three_star_avg = models.IntegerField(default=0,editable=False)
+    four_star_avg = models.IntegerField(default=0,editable=False)
+    five_star_avg = models.IntegerField(default=0,editable=False)
+    overall_rating = models.FloatField(default=0.0,editable=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -132,7 +147,22 @@ class UserPoem(models.Model):
         ('PRIVATE', 'Private'),
     )
     privacy = models.CharField(max_length=10, choices=POEM_CHOICES, default='PUBLIC')
-    total_hits = models.BigIntegerField('Total hits for this poem',default=0)   
+    total_hits = models.BigIntegerField('Total hits for this poem',default=0)
+
+    one_star_count = models.IntegerField(default=0,editable=False)
+    two_star_count = models.IntegerField(default=0,editable=False)
+    three_star_count = models.IntegerField(default=0,editable=False)
+    four_star_count = models.IntegerField(default=0,editable=False)
+    five_star_count = models.IntegerField(default=0,editable=False)
+    total_reviewer = models.IntegerField(default=0,editable=False)
+
+    one_star_avg = models.IntegerField(default=0,editable=False)
+    two_star_avg = models.IntegerField(default=0,editable=False)
+    three_star_avg = models.IntegerField(default=0,editable=False)
+    four_star_avg = models.IntegerField(default=0,editable=False)
+    five_star_avg = models.IntegerField(default=0,editable=False)
+    overall_rating = models.FloatField(default=0.0,editable=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
@@ -150,3 +180,32 @@ class AboutUs(models.Model):
         return self.about_us
     class Meta:
         verbose_name_plural = 'Add About-Us'
+
+class Rating(models.Model):
+    rate_by = models.CharField(max_length=100)
+    user_name = models.CharField(max_length=50,null=True,blank=True)
+    rating_value = models.IntegerField(default=0)
+    rated_title = models.CharField(max_length=50)
+    comment = models.TextField(null=True,blank=True)
+    block_this_comment = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.rate_by
+    class Meta:
+        verbose_name_plural = 'Rating'
+
+class FakeRaters(models.Model):
+    email = models.CharField(max_length=100)
+    status = models.BooleanField(default=True)
+    action_taken_by = models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email
+    class Meta:
+        verbose_name_plural = 'Fake Raters'
+
+class EmailOTP(models.Model):
+    email = models.CharField(max_length=100)
+    otp_number = models.IntegerField(default=0)

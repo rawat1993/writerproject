@@ -112,7 +112,10 @@ class TitleView(APIView):
                seen_list = user_stroy_detail.values_list('story_seen_no',flat=True)
                #serializer = UserStorySerializer(user_stroy_detail, many=True)
                data = append_baseUrl(user_stroy_detail,"story")
-               return Response({"data":data,"seen_list":seen_list},status=status.HTTP_200_OK)
+
+               # Retrieve details for Rating
+               title_obj = user_stroy_detail[0].title
+               return Response({"data":data,"seen_list":seen_list,"overall_rating":title_obj.overall_rating,"total_reviewer":title_obj.total_reviewer,"5_star":title_obj.five_star_avg,"4_star":title_obj.four_star_avg,"3_star":title_obj.three_star_avg,"2_star":title_obj.two_star_avg,"1_star":title_obj.one_star_avg},status=status.HTTP_200_OK)
 
             elif subject==BLOG:
                blog_content = UserBlog.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__privacy='PUBLIC'))).order_by('created_at')
@@ -129,7 +132,10 @@ class TitleView(APIView):
                   return Response(TITLE_NOT_FOUND.format(title),status=status.HTTP_404_NOT_FOUND)
                #serializer = UserPoemContentSerializer(poem_content, many=True)
                data = append_baseUrl(poem_content,"poem")
-               return Response({"data":data},status=status.HTTP_200_OK)
+
+               # Retrieve Rating value
+               title_obj = poem_content[0]
+               return Response({"data":data,"overall_rating":title_obj.overall_rating,"total_reviewer":title_obj.total_reviewer,"5_star":title_obj.five_star_avg,"4_star":title_obj.four_star_avg,"3_star":title_obj.three_star_avg,"2_star":title_obj.two_star_avg,"1_star":title_obj.one_star_avg},status=status.HTTP_200_OK)
 
             return Response(URL_NOT_CORRECT,status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:

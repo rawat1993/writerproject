@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from contentapp.models import UserSignup,UrlPostfixHistory,AboutUs,FakeRaters,Rating,EmailOTP,UserStoryTitle,UserPoem
+from contentapp.models import UserSignup,UrlPostfixHistory,AboutUs,FakeRaters,Rating,EmailOTP
 from contentapp.serializers import UserSignup_Serializer
 from django.contrib.auth.models import User
 from .constants import *
@@ -171,27 +171,9 @@ def rating_email(request):
     try:
         email = request.data['email']
         name = request.data['name']
-        search_by = request.data['search_by']
-        page_title = request.data['page_title']
-        page_type = request.data['page_type']
-
-        if page_type=="story":
-           page_type_obj = UserStoryTitle.objects.get(search_by=search_by)
-
-        elif page_type=="poem":
-           page_type_obj = UserPoem.objects.get(search_by=search_by)
-
-        author_email = page_type_obj.author.email
-        if author_email==email:
-           return Response(SELF_RATING, status=status.HTTP_302_FOUND)
-
         fake_obj = FakeRaters.objects.filter(email=email,status=True)
         if fake_obj:
-           return Response(FAKE_USER, status=status.HTTP_302_FOUND)
-
-        rating_queryset = Rating.objects.filter(rate_by=email,rated_title=search_by)
-        if rating_queryset:
-           return Response(ALREADY_RATED.format(page_title), status=status.HTTP_302_FOUND)
+           return Response(FAKE_USER, status=status.HTTP_200_OK)
 
         # Generate random number for otp
         otp = random_with_N_digits(4)
@@ -200,10 +182,16 @@ def rating_email(request):
         email_otp_obj[0].save()
 
         name = name.split()[0]
+
         # sending Email using otp
 
+        #from django.template.loader import get_template
+        #template = get_template('mail_template.html')
+        #context = {'var_name': name.title(), 'body_content':'<h1>'+str(SENT_EMAIL_WITH_OTP.format(otp))+'</h1>'}
+        #html_content=template.render(context)
+
         html_content = render_to_string(
-                'mail_template.html', {'var_name': name.title(), 'body_content':SENT_EMAIL_WITH_OTP.format(otp,page_title.title())})
+                'mail_template.html', {'var_name': name.title(), 'body_content':SENT_EMAIL_WITH_OTP.format(otp)})
         send_email(SUBJECT_FOR_OTP, html_content, [email])
 
         return Response(SENT_OTP, status=status.HTTP_200_OK)
@@ -228,138 +216,3 @@ def verify_otp(request):
 
     except Exception as error:
         return Response(NOT_VALIDATE, status=status.HTTP_404_NOT_FOUND)
-
-
-@api_view(['POST'])
-def rating_detail(request):
-    try:
-        otp = request.data['otp']
-        email = request.data['email']
-        name = request.data['name']
-        search_by = request.data['search_by']
-        star_value = request.data['star_value']
-        page_title = request.data['page_title']
-        comment = request.data['comment']
-        page_type = request.data['page_type']
-        EmailOTP.objects.get(email=email,otp_number=otp)
-        rating_queryset = Rating.objects.filter(rate_by=email,rated_title=search_by)
-        if rating_queryset:
-           return Response(ALREADY_RATED.format(page_title), status=status.HTTP_302_FOUND)
-
-        # insert star value in DB
-        insert_star_value(star_value, page_type, search_by)
-
-        rating_obj = Rating.objects.get_or_create(rate_by=email,rated_title=search_by)
-        rating_obj[0].user_name = name
-        rating_obj[0].rating_value = star_value
-        rating_obj[0].comment = comment
-        rating_obj[0].save()
-
-        # calculate overall rating and save it
-        calculate_overall_rating(page_type, search_by)
-
-        return Response(RATING_SAVED.format(page_title.title()), status=status.HTTP_200_OK)
-
-    except Exception as error:
-        print("error---------------",error)
-        return Response(OTP_ISSUE, status=status.HTTP_404_NOT_FOUND)
-
-def insert_star_value(star_value, page_type, search_by):
-
-     if page_type=="story":
-          page_type_obj = UserStoryTitle.objects.get(search_by=search_by)
-
-     elif page_type=="poem":
-          page_type_obj = UserPoem.objects.get(search_by=search_by)
-
-     if star_value == 1:
-          page_type_obj.one_star_count = page_type_obj.one_star_count + 1
-     elif star_value == 2:
-          page_type_obj.two_star_count = page_type_obj.two_star_count + 1
-     elif star_value == 3:
-          page_type_obj.three_star_count = page_type_obj.three_star_count + 1
-     elif star_value == 4:
-          page_type_obj.four_star_count = page_type_obj.four_star_count + 1
-     elif star_value == 5:
-          page_type_obj.five_star_count = page_type_obj.five_star_count + 1
-
-     page_type_obj.total_reviewer = page_type_obj.total_reviewer + 1
-     page_type_obj.save()
-
-
-def calculate_overall_rating(page_type, search_by):
-
-     if page_type=="story":
-          page_type_obj = UserStoryTitle.objects.get(search_by=search_by)
-
-     elif page_type=="poem":
-          page_type_obj = UserPoem.objects.get(search_by=search_by)
-
-     one_star = page_type_obj.one_star_count * 1
-     two_star = page_type_obj.two_star_count * 2
-     three_star = page_type_obj.three_star_count * 3
-     four_star = page_type_obj.four_star_count * 4
-     five_star = page_type_obj.five_star_count * 5
-     total_reviewer = page_type_obj.total_reviewer
-
-     total = one_star+two_star+three_star+four_star+five_star
-     total_rating = round(total/total_reviewer,1)
-
-     one_star_avg = round(page_type_obj.one_star_count*100/total_reviewer,1)
-     two_star_avg = round(page_type_obj.two_star_count*100/total_reviewer,1)
-     three_star_avg = round(page_type_obj.three_star_count*100/total_reviewer,1)
-     four_star_avg = round(page_type_obj.four_star_count*100/total_reviewer,1)
-     five_star_avg = round(page_type_obj.five_star_count*100/total_reviewer,1)
-
-     if (int(one_star_avg)+0.5)>one_star_avg:
-        one_star_avg=int(one_star_avg)
-     else:
-        one_star_avg=int(one_star_avg)+1
-
-     if (int(two_star_avg)+0.5)>two_star_avg:
-        two_star_avg=int(two_star_avg)
-     else:
-        two_star_avg=int(two_star_avg)+1
-
-     if (int(three_star_avg)+0.5)>three_star_avg:
-        three_star_avg=int(three_star_avg)
-     else:
-        three_star_avg=int(three_star_avg)+1
-
-     if (int(four_star_avg)+0.5)>four_star_avg:
-        four_star_avg=int(four_star_avg)
-     else:
-        four_star_avg=int(four_star_avg)+1
-
-     if (int(five_star_avg)+0.5)>five_star_avg:
-        five_star_avg=int(five_star_avg)
-     else:
-        five_star_avg=int(five_star_avg)+1
-
-     avg_list=[one_star_avg,two_star_avg,three_star_avg,four_star_avg,five_star_avg]
-     avg_list.sort()
-     highest_number=avg_list[-1]
-     total_sum = sum(avg_list)
-
-     if total_sum==100:
-        pass
-     else:
-         difference = total_sum-100
-         if highest_number==one_star_avg:
-            one_star_avg=one_star_avg-difference
-         elif highest_number==two_star_avg:
-            two_star_avg=two_star_avg-difference
-         elif highest_number==three_star_avg:
-            three_star_avg=three_star_avg-difference
-         elif highest_number==four_star_avg:
-            four_star_avg=four_star_avg-difference
-         elif highest_number==five_star_avg:
-            five_star_avg=five_star_avg-difference
-
-     page_type_obj.one_star_avg=one_star_avg
-     page_type_obj.two_star_avg=two_star_avg
-     page_type_obj.three_star_avg=three_star_avg
-     page_type_obj.four_star_avg=four_star_avg
-     page_type_obj.five_star_avg=five_star_avg
-     page_type_obj.overall_rating=total_rating
-     page_type_obj.save()

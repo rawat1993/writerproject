@@ -13,7 +13,7 @@ class UserStoryTitleSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = UserStoryTitle
-		fields = ('id','title', 'short_description','search_by','default_image','title_status','created_at')
+		fields = ('id','title', 'short_description','search_by','default_image','title_status','created_at','overall_rating')
 
 class UserStorySerializer(serializers.ModelSerializer):
 
@@ -38,7 +38,7 @@ class UserPoemSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = UserPoem
-		fields = ('id','title', 'short_description','search_by','default_image','title_status')
+		fields = ('id','title', 'short_description','search_by','default_image','title_status','overall_rating')
 
 class UserPoemContentSerializer(serializers.ModelSerializer):
 

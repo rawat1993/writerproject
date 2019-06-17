@@ -1,0 +1,104 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+    color: #FFF;
+}
+
+.header {
+    min-height: 70px;
+    width: 100%;
+    background-color: #FFF;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    z-index: 14;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.header >a {
+    margin-left: 20px;
+}
+
+.header >a >img {
+    height: 30px;
+    align-items: center;
+}
+
+.section {
+    min-height: calc(100% - 160px);
+    /* display: flex; */
+    background-size: cover;
+    /* align-items: center; */
+     background-image: url('http://writercreativity.com:8000/media/activate_email.jpg') 
+}
+
+.section .content {
+    padding: 20px;
+    color: #FFF;
+    font-size: 23px;
+    line-height: 24px;
+    /* align-items: center; */
+    /* flex-direction: column; */
+    /* display: flex; */
+}
+
+.section .content >p{
+    text-align: center;
+}
+
+.section .content >h1{
+    text-align: center;
+}
+
+.section .content a {
+    color: #15b192;
+}
+
+.footer {
+    background-color: #15141f;
+    padding: 10px;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.middle-content {
+    color: #FFF;
+    display: flex;
+    justify-content: space-between;
+    width: 30%;
+}
+
+.social-content {
+    color: #FFF;
+    display: flex;
+    justify-content: space-between;
+    width: 8%;
+}
+
+.footer section >a >img {
+    height: 30px;
+    align-items: center;
+}
+
+@media (max-width: 992px) {
+    .header {
+        min-height: 100px;
+    }
+    .middle-content {
+        flex-direction: column;    
+    }
+    .footer {
+        min-height: 150px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .section {
+        min-height: calc(100% - 270px);
+    }
+}

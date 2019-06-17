@@ -33,7 +33,9 @@ class AboutUsAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
 admin.site.register(UrlPostfixHistory,UrlPostfixHistoryadmin)
 admin.site.register(LoggingHistory)
 admin.site.register(AboutUs, AboutUsAdmin)
-
+admin.site.register(Rating)
+admin.site.register(FakeRaters)
+admin.site.register(EmailOTP)
 
 # Settings for User-admin
 # User independent admin sites
