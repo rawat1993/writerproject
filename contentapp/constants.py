@@ -10,7 +10,7 @@ NOT_AVAILABLE = "{}'s are not available for this user"
 #########################################
 # Mail setup
 
-MAIL_FAILD = "Mail not sent Network issue"
+MAIL_FAILD = "Mail not sent Please check your internet"
 EMAIL_SUBJECTS = "Writer | Activate account"
 #EMAIL_CONTENT = "Hi {}, \n\n We sent you activation link to setup your account with us.\n http://18.188.167.66:8000/activate/?token={} \n\n\n Regards,\nWriting Team"
 EMAIL_CONTENT = "Welcome to WC! To complete your registration, Please click the link below to validate your email and begin using the platform. \n\n"

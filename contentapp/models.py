@@ -186,6 +186,7 @@ class Rating(models.Model):
     user_name = models.CharField(max_length=50,null=True,blank=True)
     rating_value = models.IntegerField(default=0)
     rated_title = models.CharField(max_length=50)
+    heading_for_comment = models.CharField(max_length=50,null=True,blank=True)
     comment = models.TextField(null=True,blank=True)
     block_this_comment = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

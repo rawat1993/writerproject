@@ -209,8 +209,7 @@ def rating_email(request):
         return Response(SENT_OTP, status=status.HTTP_200_OK)
 
     except Exception as error:
-        print("heyyyyyyyyyyyyyyyyyyyyyyyy",error)
-        return Response(ABOUT_US,status=status.HTTP_404_NOT_FOUND)
+        return Response(MAIL_FAILD,status=status.HTTP_404_NOT_FOUND)
 
 def random_with_N_digits(n):
     range_start = 10**(n-1)
@@ -241,6 +240,7 @@ def rating_detail(request):
         page_title = request.data['page_title']
         comment = request.data['comment']
         page_type = request.data['page_type']
+        subject = request.data['subject']
         EmailOTP.objects.get(email=email,otp_number=otp)
         rating_queryset = Rating.objects.filter(rate_by=email,rated_title=search_by)
         if rating_queryset:
@@ -253,6 +253,7 @@ def rating_detail(request):
         rating_obj[0].user_name = name
         rating_obj[0].rating_value = star_value
         rating_obj[0].comment = comment
+        rating_obj[0].heading_for_comment = subject
         rating_obj[0].save()
 
         # calculate overall rating and save it
@@ -363,3 +364,44 @@ def calculate_overall_rating(page_type, search_by):
      page_type_obj.five_star_avg=five_star_avg
      page_type_obj.overall_rating=total_rating
      page_type_obj.save()
+
+
+@api_view(['GET'])
+def reviewers_detail(request):
+    try:
+        search_by = request.GET.get('search_by')
+        rating_queryset = Rating.objects.filter(rated_title=search_by)
+        reviewer_list = []
+        for obj in rating_queryset:
+            reviewer_dict = {}
+            user_photo=""
+            name = obj.user_name
+            try:
+               user_obj = UserSignup.objects.get(email=obj.rate_by)
+               user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
+               name = user_obj.full_name
+            except Exception as e:
+               pass
+
+            reviewer_dict["reviewer_photo"]=user_photo
+            reviewer_dict["reviewer_name"]=name
+            reviewer_dict["given_star"]=obj.rating_value
+            reviewer_dict["date"]=obj.created_at
+
+            # Check comment status
+            comment = obj.comment
+            subject=None
+            if obj.block_this_comment:
+               comment = ""
+            else:
+                if obj.heading_for_comment:
+                   subject = (obj.heading_for_comment).title()
+
+            reviewer_dict["comment"]=comment
+            reviewer_dict["reviewer_subject"]= subject
+            reviewer_list.append(reviewer_dict)
+        return Response(reviewer_list,status=status.HTTP_200_OK)
+
+    except Exception as error:
+        print("Errorrrrr",error)
+        return Response(NOT_VALIDATE, status=status.HTTP_404_NOT_FOUND)
