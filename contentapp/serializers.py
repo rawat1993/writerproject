@@ -9,11 +9,18 @@ class UserSignup_Serializer(serializers.ModelSerializer):
 		fields = ('full_name', 'email','phone_number','city','state','country','short_description','user_photo','cover_photo')
 
 
+class UserSignupBasicDetailSeriaizer(serializers.ModelSerializer):
+
+        class Meta:
+                model = UserSignup
+                fields = ('full_name','user_photo')
+
+
 class UserStoryTitleSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = UserStoryTitle
-		fields = ('id','title', 'short_description','search_by','default_image','title_status','created_at','overall_rating')
+		fields = ('id','title', 'short_description','search_by','default_image','title_status','created_at','overall_rating','total_reviewer','five_star_avg','four_star_avg','three_star_avg','two_star_avg','one_star_avg')
 
 class UserStorySerializer(serializers.ModelSerializer):
 
@@ -38,7 +45,7 @@ class UserPoemSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = UserPoem
-		fields = ('id','title', 'short_description','search_by','default_image','title_status','overall_rating')
+		fields = ('id','title', 'short_description','search_by','default_image','title_status','overall_rating','total_reviewer','five_star_avg','four_star_avg','three_star_avg','two_star_avg','one_star_avg')
 
 class UserPoemContentSerializer(serializers.ModelSerializer):
 

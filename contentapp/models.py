@@ -61,7 +61,8 @@ class UserBlogTitle(models.Model):
         ('PRIVATE', 'Private'),
     )
     privacy = models.CharField(max_length=10, choices=BLOG_CHOICES, default='PUBLIC')
-    total_hits = models.BigIntegerField('Total hits for this Blog',default=0) 
+    total_hits = models.BigIntegerField('Total hits for this Blog',default=0)
+    verified_content = models.BooleanField(default=True,editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -98,6 +99,7 @@ class UserStoryTitle(models.Model):
     )
     privacy = models.CharField(max_length=10, choices=STORY_CHOICES, default='PUBLIC')
     total_hits = models.BigIntegerField('Total hits for this Stroy',default=0)
+    verified_content = models.BooleanField(default=True,editable=False)
 
     one_star_count = models.IntegerField(default=0,editable=False)
     two_star_count = models.IntegerField(default=0,editable=False)
@@ -148,6 +150,7 @@ class UserPoem(models.Model):
     )
     privacy = models.CharField(max_length=10, choices=POEM_CHOICES, default='PUBLIC')
     total_hits = models.BigIntegerField('Total hits for this poem',default=0)
+    verified_content = models.BooleanField(default=True,editable=False)
 
     one_star_count = models.IntegerField(default=0,editable=False)
     two_star_count = models.IntegerField(default=0,editable=False)
@@ -210,3 +213,23 @@ class FakeRaters(models.Model):
 class EmailOTP(models.Model):
     email = models.CharField(max_length=100)
     otp_number = models.IntegerField(default=0)
+
+
+# CONTENT VERIFIED STATUS
+class ContentVerified(models.Model):
+    action_for = models.CharField(max_length=10)
+    title = models.CharField(max_length=30)
+    RESION_TYPE = (
+        ('COPYRIGHT', 'Copyright Content'),
+        ('SEXUAL', 'Sexual Content'),
+        ('ACTIVE', 'No Action'),
+    )
+    resion = models.CharField("Take Action",max_length=20, choices=RESION_TYPE, default='ACTIVE')
+    action_taken_by = models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.title
+    class Meta:
+        verbose_name_plural = 'Verify Content'
+

@@ -17,6 +17,7 @@ from contentapp.user_profile_views import append_baseUrl
 from django.shortcuts import render
 from django.shortcuts import render_to_response
 from random import randint
+from django.core.paginator import Paginator
 
 def send_email(subject, send_message, toUser):
     """
@@ -146,7 +147,11 @@ def url_postfix_availability(request):
 @api_view(['GET'])
 def about_us_page(request):
     try:
-        about_us = AboutUs.objects.all()
+        page_type = request.GET.get('page_type',None)
+        if page_type=="term":
+           about_us = AboutUs.objects.filter(about_us='terms-conditions')
+        else:
+           about_us = AboutUs.objects.filter(about_us='about-us')
         data = append_baseUrl(about_us,"about-us")
         return Response({"data":data},status=status.HTTP_200_OK)
 
@@ -370,15 +375,20 @@ def calculate_overall_rating(page_type, search_by):
 def reviewers_detail(request):
     try:
         search_by = request.GET.get('search_by')
+        requested_page_no = request.GET.get('page',1)
         rating_queryset = Rating.objects.filter(rated_title=search_by)
+        page_obj = Paginator(rating_queryset, 6)
+        requested_page = page_obj.page(requested_page_no)
+
         reviewer_list = []
-        for obj in rating_queryset:
+        for obj in requested_page:
             reviewer_dict = {}
             user_photo=""
             name = obj.user_name
             try:
                user_obj = UserSignup.objects.get(email=obj.rate_by)
-               user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
+               if user_obj.user_photo:
+                  user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
                name = user_obj.full_name
             except Exception as e:
                pass
@@ -400,8 +410,123 @@ def reviewers_detail(request):
             reviewer_dict["comment"]=comment
             reviewer_dict["reviewer_subject"]= subject
             reviewer_list.append(reviewer_dict)
-        return Response(reviewer_list,status=status.HTTP_200_OK)
+        return Response({"data":reviewer_list,"total_pages":page_obj.num_pages},status=status.HTTP_200_OK)
 
     except Exception as error:
         print("Errorrrrr",error)
         return Response(NOT_VALIDATE, status=status.HTTP_404_NOT_FOUND)
+
+
+
+################# Finding Best writers #######################
+
+@api_view(['GET'])
+def top_writers_list(request):
+
+    filter_by = request.GET.get('filter_by','both')
+    if filter_by=='top_poets':
+       poets_sublist = find_top_writers()[1]
+       if poets_sublist:
+          data = []
+          for obj in poets_sublist:
+              user_obj = UserSignup.objects.get(email=obj[0])
+              user_photo = ""
+              if user_obj.user_photo:
+                  user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+
+          return Response(data,status=status.HTTP_200_OK)
+       else:
+          return Response(POETS, status=status.HTTP_404_NOT_FOUND)
+
+    elif filter_by=='top_story_writer':
+       story_writer_sublist = find_top_writers()[0]
+       if story_writer_sublist:
+          data = []
+          for obj in story_writer_sublist:
+              user_obj = UserSignup.objects.get(email=obj[0])
+              user_photo = ""
+              if user_obj.user_photo:
+                  user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+
+          return Response(data,status=status.HTTP_200_OK)
+       else:
+          return Response(STORY_WRITERS, status=status.HTTP_404_NOT_FOUND)
+
+
+    elif filter_by=='both':
+       both_sublist = find_top_writers()[2]
+       if both_sublist:
+          data = []
+          for obj in both_sublist:
+              user_obj = UserSignup.objects.get(email=obj[0])
+              user_photo = ""
+              if user_obj.user_photo:
+                  user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+
+          return Response(data,status=status.HTTP_200_OK)
+       else:
+          return Response(NO_WRITERS, status=status.HTTP_404_NOT_FOUND)
+
+########## Logic to find top users ###################################
+
+def find_top_writers():
+    all_writers = UserSignup.objects.filter(status=True).values_list('email',flat=True)
+    stroy_calculation = []
+    poem_calculation = []
+    both_calculation = []
+    for author_email in all_writers:
+        total_story = UserStoryTitle.objects.filter(author__email=author_email,privacy='PUBLIC',verified_content=True,total_reviewer__gte=1).values_list('overall_rating','total_reviewer')
+        total_poems = UserPoem.objects.filter(author__email=author_email,privacy='PUBLIC',verified_content=True,total_reviewer__gte=1).values_list('overall_rating','total_reviewer')
+
+        story_total_rating = 0
+        story_total_reviewer = 0
+        poem_total_rating = 0
+        poem_total_reviewer = 0
+
+        if total_story:
+           for rating_review in total_story:
+               story_total_rating = story_total_rating + rating_review[0]
+               story_total_reviewer = story_total_reviewer + rating_review[1]
+
+           avg_rating_per_book = story_total_rating/len(total_story)
+           story_total_point = avg_rating_per_book*story_total_reviewer
+           stroy_calculation.append([author_email,story_total_point])
+
+        if total_poems:
+           for rating_review in total_poems:
+               poem_total_rating = poem_total_rating + rating_review[0]
+               poem_total_reviewer = poem_total_reviewer + rating_review[1]
+
+           avg_rating_per_poem = poem_total_rating/len(total_poems)
+           poem_total_point = avg_rating_per_poem*poem_total_reviewer
+           poem_calculation.append([author_email,poem_total_point])
+
+        if total_story or total_poems:
+           both_rating = story_total_rating+poem_total_rating
+           total_story_poem = len(total_story)+len(total_poems)
+
+           avg_rating_for_both = both_rating/total_story_poem
+           total_reviewer_for_both = story_total_reviewer+poem_total_reviewer
+           both_total_point = avg_rating_for_both*total_reviewer_for_both
+           both_calculation.append([author_email,both_total_point])
+
+    stroy_calculation = arrange_best_writers_order(stroy_calculation)
+    poem_calculation = arrange_best_writers_order(poem_calculation)
+    both_calculation = arrange_best_writers_order(both_calculation)
+
+    return stroy_calculation,poem_calculation,both_calculation
+
+
+def arrange_best_writers_order(sub_li):
+    l = len(sub_li)
+    for i in range(0, l):
+        for j in range(0, l-i-1):
+            if (sub_li[j][1] < sub_li[j + 1][1]):
+                tempo = sub_li[j]
+                sub_li[j]= sub_li[j + 1]
+                sub_li[j + 1]= tempo
+    return sub_li
+

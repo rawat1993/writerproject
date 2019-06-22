@@ -5,7 +5,7 @@ USER_REGISTERED = "User has been successfully registered"
 USER_ALREADY_REGISTERED = "User already registered with us"
 URL_NOT_CORRECT = "Please correct your URL"
 PAGE_NOT_FOUND = "Page not found for this {}"
-TITLE_NOT_FOUND = "{} title is not correct for this user"
+TITLE_NOT_FOUND = "Content is not added yet by the Author for this {}"
 NOT_AVAILABLE = "{}'s are not available for this user"
 #########################################
 # Mail setup
@@ -18,7 +18,7 @@ ACTIVATION_LINK = "http://writercreativity.com:8000/activate/?token={}"
 
 ############## User Profile List #################
 USER_POSTFIX_NOT_FOUND = "User Postfix String not found"
-POSTFIX_STATUS = "You are Blocked by super-admin"
+POSTFIX_STATUS = "You are Blocked by Admin Please contact to WC Team"
 
 ############# Fix keywords value #################
 STORY = "story"
@@ -88,9 +88,27 @@ SENT_OTP = "We sent OTP to your Email Please verify your email"
 SUBJECT_FOR_OTP = "One Time Password(OTP)"
 SENT_EMAIL_WITH_OTP = "Your One Time Password(OTP) is {} \n\n You can use it to rate {}"
 OTP_VALIDATED = "validated"
-NOT_VALIDATE = "Please enter correct OTP"
+NOT_VALIDATE = "! Please enter correct OTP"
 ALREADY_RATED = "You already rated {}"
 OTP_ISSUE = "You requested for new OTP from other terminal, Please refresh the page"
 RATING_SAVED = "Thanks for giving your valuable time to rate {}"
 SELF_RATING = "Self rating is not Allowed"
 
+
+########################## Content Verify Email constants #######################
+COPYRIGHT_EMAIL = "Your content was found copied from other user content. It is against term & condition of WC. So your {} {} is blocked by WC Team. Please go through the below link to read Terms & Conditions."
+SEXUAL_CONTENT_EMAIL = "We found You are using sexual content. It is against term & condition of WC. So your {} {} is blocked by WC Team. Please go through the below link to read Terms & Conditions."
+ACTIVE_CONTENT_EMAIL = "Congratulation now your content is correct. And your {} {} is activated by WC Team. Please go through the below link to read Terms & Conditions."
+SUBJECT_FOR_VERIFY_CONTENT = "Verified Content by WC"
+
+######################### URLPostFix blocked Email ##############################
+POSTFIX_BLOCKED_EMAIL = "Your account has been blocked by WC Team, Please go through the below link to read Terms & Conditions."
+WC_TERMS_AND_CONDTIONS = "http://writercreativity.com/about-us"
+POSTFIX_REACTIVATE_EMAIL = "Congratulation Your account has been re-activated by WC Team."
+SUBJECT_FOR_POSTFIX_BLOCKED_EMAIL = "Account has been Blocked By WC"
+SUBJECT_FOR_REACTIVATE_POSTFIX = "Congratulations your account reactivated by WC"
+
+######################### Writer Listing Page Constant ###########################
+STORY_WRITERS = "Story Writers Not Available"
+POETS = "Poets are not Available"
+NO_WRITERS = "No Writers Available Yet"
