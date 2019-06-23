@@ -112,3 +112,9 @@ SUBJECT_FOR_REACTIVATE_POSTFIX = "Congratulations your account reactivated by WC
 STORY_WRITERS = "Story Writers Not Available"
 POETS = "Poets are not Available"
 NO_WRITERS = "No Writers Available Yet"
+
+
+######################### Reviewer Notification Constant for Author ###########################
+NOTIFICATION_EMAIL = "{} recently reviewed your {} {}. {} left feedback with rating of {} star, for more detail please click on below link."
+NOTIFICATION_SUBJECT = "{} Reviewed by {} | WC"
+REVIEWER_LINK = "http://writercreativity.com/{}/{}/{}/reviews"

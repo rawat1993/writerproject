@@ -251,7 +251,7 @@ def rating_detail(request):
         EmailOTP.objects.get(email=email,otp_number=otp)
         rating_queryset = Rating.objects.filter(rate_by=email,rated_title=search_by)
         if rating_queryset:
-           return Response(ALREADY_RATED.format(page_title), status=status.HTTP_302_FOUND)
+           return Response(ALREADY_RATED.format(page_title.title()), status=status.HTTP_302_FOUND)
 
         # insert star value in DB
         insert_star_value(star_value, page_type, search_by)
@@ -266,11 +266,37 @@ def rating_detail(request):
         # calculate overall rating and save it
         calculate_overall_rating(page_type, search_by)
 
+        # sent notification to Author
+        try:
+           sent_notictaion_email_to_author(page_type,search_by,name,star_value,page_title)
+        except:
+           pass
+
         return Response(RATING_SAVED.format(page_title.title()), status=status.HTTP_200_OK)
 
     except Exception as error:
         print("error---------------",error)
         return Response(OTP_ISSUE, status=status.HTTP_404_NOT_FOUND)
+
+
+def sent_notictaion_email_to_author(page_type,search_by,name,star_value,page_title):
+    if page_type=="story":
+        obj = UserStoryTitle.objects.get(search_by=search_by)
+    elif page_type=="poem":
+        obj = UserPoem.objects.get(search_by=search_by)
+
+    notification_status = obj.notification
+    if notification_status=="ON":
+        page_title = page_title.title()
+        name = name.title()
+        first_name = (name.split()[0]).title()
+        author_email = obj.author.email
+        author_name = UserSignup.objects.get(email=author_email).full_name.split()[0]    
+        author_url = UrlPostfixHistory.objects.get(user_email=author_email).url_postfix
+
+        html_content = render_to_string('mail_template.html', {'var_name': author_name.title(), 'body_content':NOTIFICATION_EMAIL.format(name,page_type,page_title,first_name,star_value), 'terms_conditions':REVIEWER_LINK.format(author_url,page_type,search_by)})
+        send_email(NOTIFICATION_SUBJECT.format(page_title,name), html_content, [author_email])
+
 
 def insert_star_value(star_value, page_type, search_by):
 
@@ -552,5 +578,6 @@ def create_response_queryset(queryset_obj):
     for obj in queryset_obj:
         cover_photo = HOST_NAME+"/media/"+str(obj.default_image)
         auther_name = UserSignup.objects.get(email=obj.author.email).full_name
-        data.append({"title":obj.title,"search_by":obj.search_by,"cover_photo":cover_photo,"publish_date":obj.publish_date,"author_name":auther_name})
+        author_url = UrlPostfixHistory.objects.get(user_email=obj.author.email).url_postfix
+        data.append({"title":obj.title,"search_by":obj.search_by,"cover_photo":cover_photo,"publish_date":obj.publish_date,"author_name":auther_name,"overall_rating":obj.overall_rating,"post_fix":author_url})
     return data
