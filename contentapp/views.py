@@ -18,6 +18,8 @@ from django.shortcuts import render
 from django.shortcuts import render_to_response
 from random import randint
 from django.core.paginator import Paginator
+from datetime import datetime
+from django.utils import timezone
 
 def send_email(subject, send_message, toUser):
     """
@@ -289,6 +291,9 @@ def insert_star_value(star_value, page_type, search_by):
      elif star_value == 5:
           page_type_obj.five_star_count = page_type_obj.five_star_count + 1
 
+     if page_type_obj.total_reviewer==0:
+        page_type_obj.publish_date = timezone.now()
+
      page_type_obj.total_reviewer = page_type_obj.total_reviewer + 1
      page_type_obj.save()
 
@@ -530,3 +535,28 @@ def arrange_best_writers_order(sub_li):
                 sub_li[j + 1]= tempo
     return sub_li
 
+
+############### Poem and Story of the Week ######################################
+
+@api_view(['GET'])
+def poem_story_of_the_week(request):
+
+    filter_by = request.GET.get('filter_by')
+
+    if filter_by=='poem':
+        poem_queryset = UserPoem.objects.filter(total_reviewer__gte=1,verified_content=True,privacy='PUBLIC').order_by('-publish_date')
+        data = create_response_queryset(poem_queryset)
+        return Response(data,status=status.HTTP_200_OK)
+
+    elif filter_by=='story':
+        story_queryset = UserStoryTitle.objects.filter(total_reviewer__gte=1,verified_content=True,privacy='PUBLIC').order_by('-publish_date')
+        data = create_response_queryset(story_queryset)
+        return Response(data,status=status.HTTP_200_OK)
+
+def create_response_queryset(queryset_obj):
+    data = []
+    for obj in queryset_obj:
+        cover_photo = HOST_NAME+"/media/"+str(obj.default_image)
+        auther_name = UserSignup.objects.get(email=obj.author.email).full_name
+        data.append({"title":obj.title,"search_by":obj.search_by,"cover_photo":cover_photo,"publish_date":obj.publish_date,"author_name":auther_name})
+    return data

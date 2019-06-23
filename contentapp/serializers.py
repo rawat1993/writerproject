@@ -9,13 +9,6 @@ class UserSignup_Serializer(serializers.ModelSerializer):
 		fields = ('full_name', 'email','phone_number','city','state','country','short_description','user_photo','cover_photo')
 
 
-class UserSignupBasicDetailSeriaizer(serializers.ModelSerializer):
-
-        class Meta:
-                model = UserSignup
-                fields = ('full_name','user_photo')
-
-
 class UserStoryTitleSerializer(serializers.ModelSerializer):
 
 	class Meta:
@@ -52,4 +45,3 @@ class UserPoemContentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = UserPoem
 		fields = ('id','title', 'short_description','default_image','content')
-

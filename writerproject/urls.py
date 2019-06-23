@@ -40,6 +40,7 @@ urlpatterns = [
     path('rating-detail/', views.rating_detail),
     path('reviewers-detail/', views.reviewers_detail),
     path('writers-list/', views.top_writers_list),
+    path('best-of-the-week/', views.poem_story_of_the_week),
 
     # Reset Password urls
     path('account-reset-password/',auth_views.PasswordResetView.as_view(),name='admin_password_reset'),
