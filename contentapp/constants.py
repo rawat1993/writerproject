@@ -84,7 +84,7 @@ MOBILE_COLORE_1 = "#000"
 
 ########################### Rating constants ##################################
 FAKE_USER = "Your Email has been blocked By WC Team Please contact to WC"
-SENT_OTP = "We sent OTP to your Email Please verify your email"
+SENT_OTP = "OTP sent to your Email Please verify"
 SUBJECT_FOR_OTP = "One Time Password(OTP)"
 SENT_EMAIL_WITH_OTP = "Your One Time Password(OTP) is {} \n\n You can use it to rate {}"
 OTP_VALIDATED = "validated"

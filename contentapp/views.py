@@ -375,13 +375,13 @@ def calculate_overall_rating(page_type, search_by):
 def reviewers_detail(request):
     try:
         search_by = request.GET.get('search_by')
-        requested_page_no = request.GET.get('page',1)
+        #requested_page_no = request.GET.get('page',1)
         rating_queryset = Rating.objects.filter(rated_title=search_by)
-        page_obj = Paginator(rating_queryset, 6)
-        requested_page = page_obj.page(requested_page_no)
+        #page_obj = Paginator(rating_queryset, 6)
+        #requested_page = page_obj.page(requested_page_no)
 
         reviewer_list = []
-        for obj in requested_page:
+        for obj in rating_queryset:
             reviewer_dict = {}
             user_photo=""
             name = obj.user_name
@@ -410,7 +410,7 @@ def reviewers_detail(request):
             reviewer_dict["comment"]=comment
             reviewer_dict["reviewer_subject"]= subject
             reviewer_list.append(reviewer_dict)
-        return Response({"data":reviewer_list,"total_pages":page_obj.num_pages},status=status.HTTP_200_OK)
+        return Response({"data":reviewer_list},status=status.HTTP_200_OK)
 
     except Exception as error:
         print("Errorrrrr",error)
