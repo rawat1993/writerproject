@@ -541,17 +541,11 @@ def arrange_best_writers_order(sub_li):
 @api_view(['GET'])
 def poem_story_of_the_week(request):
 
-    filter_by = request.GET.get('filter_by')
-
-    if filter_by=='poem':
-        poem_queryset = UserPoem.objects.filter(total_reviewer__gte=1,verified_content=True,privacy='PUBLIC').order_by('-publish_date')
-        data = create_response_queryset(poem_queryset)
-        return Response(data,status=status.HTTP_200_OK)
-
-    elif filter_by=='story':
-        story_queryset = UserStoryTitle.objects.filter(total_reviewer__gte=1,verified_content=True,privacy='PUBLIC').order_by('-publish_date')
-        data = create_response_queryset(story_queryset)
-        return Response(data,status=status.HTTP_200_OK)
+    poem_queryset = UserPoem.objects.filter(total_reviewer__gte=1,verified_content=True,privacy='PUBLIC').order_by('-publish_date')
+    poem_data = create_response_queryset(poem_queryset)
+    story_queryset = UserStoryTitle.objects.filter(total_reviewer__gte=1,verified_content=True,privacy='PUBLIC').order_by('-publish_date')
+    story_data = create_response_queryset(story_queryset)
+    return Response({"story_data":story_data,"poem_data":poem_data},status=status.HTTP_200_OK)
 
 def create_response_queryset(queryset_obj):
     data = []
