@@ -154,7 +154,7 @@ class UserStory(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
-        return self.story_seen_no
+        return self.title.title
     class Meta:
         unique_together = (("title", "story_seen_no"),)
         verbose_name_plural = 'Add Stroy Content'

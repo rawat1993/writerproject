@@ -118,3 +118,12 @@ NO_WRITERS = "No Writers Available Yet"
 NOTIFICATION_EMAIL = "{} recently reviewed your {} {}. {} left feedback with rating of {} star, for more detail please click on below link."
 NOTIFICATION_SUBJECT = "{} Reviewed by {} | WC"
 REVIEWER_LINK = "http://writercreativity.com/{}/{}/{}/reviews"
+
+######################### Home Page Headings Constant for Poem and Story #####################
+POEM_HEADING = "Poem of the Week"
+POEM_SUBJECT = "Poetry is when an emotion has found its thought And the thought has found Words"
+POEM_SUBJECT_BY = "by Robert Frost"
+
+STORY_HEADING = "Story of the Week"
+STORY_SUBJECT = "Readers are the ink of the pen to Write"
+STORY_SUBJECT_BY = "by Ajay Pal Singh"

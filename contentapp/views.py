@@ -20,6 +20,8 @@ from random import randint
 from django.core.paginator import Paginator
 from datetime import datetime
 from django.utils import timezone
+# from background_task import background
+from contentapp.tasks import sent_notictaion_email_to_author
 
 def send_email(subject, send_message, toUser):
     """
@@ -269,8 +271,8 @@ def rating_detail(request):
         # sent notification to Author
         try:
            sent_notictaion_email_to_author(page_type,search_by,name,star_value,page_title)
-        except:
-           pass
+        except Exception as error:
+           print("heyyyyyyyyyyyyyyyyyyyy=======>",error)
 
         return Response(RATING_SAVED.format(page_title.title()), status=status.HTTP_200_OK)
 
@@ -278,24 +280,25 @@ def rating_detail(request):
         print("error---------------",error)
         return Response(OTP_ISSUE, status=status.HTTP_404_NOT_FOUND)
 
+# @background(schedule=60)
+# def sent_notictaion_email_to_author(page_type,search_by,name,star_value,page_title):
+#     print("yessssssssssssssssssssssssssssssssss")
+#     if page_type=="story":
+#         obj = UserStoryTitle.objects.get(search_by=search_by)
+#     elif page_type=="poem":
+#         obj = UserPoem.objects.get(search_by=search_by)
 
-def sent_notictaion_email_to_author(page_type,search_by,name,star_value,page_title):
-    if page_type=="story":
-        obj = UserStoryTitle.objects.get(search_by=search_by)
-    elif page_type=="poem":
-        obj = UserPoem.objects.get(search_by=search_by)
+#     notification_status = obj.notification
+#     if notification_status=="ON":
+#         page_title = page_title.title()
+#         name = name.title()
+#         first_name = (name.split()[0]).title()
+#         author_email = obj.author.email
+#         author_name = UserSignup.objects.get(email=author_email).full_name.split()[0]    
+#         author_url = UrlPostfixHistory.objects.get(user_email=author_email).url_postfix
 
-    notification_status = obj.notification
-    if notification_status=="ON":
-        page_title = page_title.title()
-        name = name.title()
-        first_name = (name.split()[0]).title()
-        author_email = obj.author.email
-        author_name = UserSignup.objects.get(email=author_email).full_name.split()[0]    
-        author_url = UrlPostfixHistory.objects.get(user_email=author_email).url_postfix
-
-        html_content = render_to_string('mail_template.html', {'var_name': author_name.title(), 'body_content':NOTIFICATION_EMAIL.format(name,page_type,page_title,first_name,star_value), 'terms_conditions':REVIEWER_LINK.format(author_url,page_type,search_by)})
-        send_email(NOTIFICATION_SUBJECT.format(page_title,name), html_content, [author_email])
+#         html_content = render_to_string('mail_template.html', {'var_name': author_name.title(), 'body_content':NOTIFICATION_EMAIL.format(name,page_type,page_title,first_name,star_value), 'terms_conditions':REVIEWER_LINK.format(author_url,page_type,search_by)})
+#         send_email(NOTIFICATION_SUBJECT.format(page_title,name), html_content, [author_email])
 
 
 def insert_star_value(star_value, page_type, search_by):
@@ -571,7 +574,7 @@ def poem_story_of_the_week(request):
     poem_data = create_response_queryset(poem_queryset)
     story_queryset = UserStoryTitle.objects.filter(total_reviewer__gte=1,verified_content=True,privacy='PUBLIC').order_by('-publish_date')
     story_data = create_response_queryset(story_queryset)
-    return Response({"story_data":story_data,"poem_data":poem_data},status=status.HTTP_200_OK)
+    return Response({"story_data":story_data,"poem_data":poem_data,"poem_heading":POEM_HEADING,"poem_subject":POEM_SUBJECT,"poem_subject_by":POEM_SUBJECT_BY,"story_heading":STORY_HEADING,"story_subject":STORY_SUBJECT,"story_subject_by":STORY_SUBJECT_BY},status=status.HTTP_200_OK)
 
 def create_response_queryset(queryset_obj):
     data = []

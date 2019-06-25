@@ -7,6 +7,8 @@ from .constants import *
 from .views import send_email
 from datetime import datetime
 from django.template.loader import render_to_string
+from django.db.models import Q
+
 
 # Register your models here.
 
@@ -92,9 +94,21 @@ class UserStoryAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
     summernote_fields = 'content'
     list_display = ('story_seen_no','title','total_hits') 
     readonly_fields = ["total_hits"]
-    #def save_model(self, request, obj, form, change):
-    #    obj.story_seen_no="".join((obj.story_seen_no).split())
-    #    obj.save()
+
+    def has_change_permission(self, request, obj=None):
+      if not obj.__str__() =='None':     
+        if UserStory.objects.filter(Q(title__title=obj.__str__()) & Q(title__author=request.user) & Q(title__total_reviewer__gte=1)):
+          return False
+        else:
+          return True
+
+    def has_delete_permission(self, request, obj=None):
+      if not obj.__str__() =='None':     
+        if UserStory.objects.filter(Q(title__title=obj.__str__()) & Q(title__author=request.user) & Q(title__total_reviewer__gte=1)):
+          return False
+        else:
+          return True
+
     def get_queryset(self, request):
         qs = super(UserStoryAdmin, self).get_queryset(request)
         # if request.user.is_superuser:
@@ -103,15 +117,33 @@ class UserStoryAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
 
 
     def render_change_form(self, request, context, *args, **kwargs):
-         context['adminform'].form.fields['title'].queryset = UserStoryTitle.objects.filter(author=request.user)
-         return super(UserStoryAdmin, self).render_change_form(request, context, *args, **kwargs)
-
+        if kwargs['obj']==None or not UserStory.objects.filter(Q(title__title=kwargs['obj'].title.title) & Q(title__author=request.user) & Q(title__total_reviewer__gte=1)):
+          context['adminform'].form.fields['title'].queryset = UserStoryTitle.objects.filter(author=request.user, total_reviewer=0)
+          return super(UserStoryAdmin, self).render_change_form(request, context, *args, **kwargs)     
+        else:
+           # context['adminform'].form.fields['title'].queryset = UserStory.objects.filter(title__author=request.user)
+           return super(UserStoryAdmin, self).render_change_form(request, context, *args, **kwargs) 
 
 
 class UserPoemAdmin(SummernoteModelAdmin):
     summernote_fields = 'content'
     list_display = ('title','short_description','privacy','total_hits','search_by')
     readonly_fields = ["total_hits"]
+
+    def has_change_permission(self, request, obj=None):
+      if UserPoem.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(total_reviewer__gte=1)):
+        return False
+      else:
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+      if UserPoem.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(total_reviewer__gte=1)):
+        return False
+      else:
+        return True
+
+
+
     def save_model(self, request, obj, form, change):
            obj.author = request.user
            obj.save()
@@ -185,6 +217,21 @@ user_admin_site.register(UserBlogTitle,UserBlogTitleAdmin)
 class UserStroyTitleAdmin(SummernoteModelAdmin):
     readonly_fields = ["total_hits"]
     list_display = ('title','short_description','privacy','total_hits','search_by')
+
+
+    def has_change_permission(self, request, obj=None):
+      if UserStoryTitle.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(total_reviewer__gte=1)):
+        return False
+      else:
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+      if UserStoryTitle.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(total_reviewer__gte=1)):
+        return False
+      else:
+        return True
+
+
     def save_model(self, request, obj, form, change):
            obj.author = request.user
            obj.save()
