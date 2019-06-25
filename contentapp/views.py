@@ -582,5 +582,5 @@ def create_response_queryset(queryset_obj):
         cover_photo = HOST_NAME+"/media/"+str(obj.default_image)
         auther_name = UserSignup.objects.get(email=obj.author.email).full_name
         author_url = UrlPostfixHistory.objects.get(user_email=obj.author.email).url_postfix
-        data.append({"title":obj.title,"search_by":obj.search_by,"cover_photo":cover_photo,"publish_date":obj.publish_date,"author_name":auther_name,"overall_rating":obj.overall_rating,"post_fix":author_url})
+        data.append({"title":obj.title,"search_by":obj.search_by,"cover_photo":cover_photo,"publish_date":obj.publish_date,"author_name":auther_name,"overall_rating":obj.overall_rating,"post_fix":author_url,"title_choice":obj.title_choice})
     return data
