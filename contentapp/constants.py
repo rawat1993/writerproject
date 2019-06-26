@@ -61,8 +61,11 @@ DESKTOP_COVER_IMAGE_9 = "http://writercreativity.com:8000/media/desktop/home_pag
 
 HOME_QUOTE_1 = ["Creativity is an art","And","Art is my passion"]
 HOME_QUOTE_2 = ["Sometimes you want","Read","Think a lot","But","Your responsibilities are disturb You"]
-HOME_QUOTE_3 = ["I am Alone","Like","A Moon"]
-HOME_QUOTE_4 = ["I am writing","About someone","Please don't tell Her"]
+HOME_QUOTE_3 = ["I am Alone","Like","A Moon","by Ajay Pal Singh"]
+HOME_QUOTE_4 = ["There is no greater Agony","Than","Bearing an untold story inside You","by Maya Angelou"]
+HOME_QUOTE_5 = ["Start writing","No matter what","The water does not flow until the Faucet is turned on","by Louis L’Amour"]
+HOME_QUOTE_6 = ["To gain your own voice","You have to forget","about having it heard","by ALLEN GINSBERG"]
+
 TEXT_COLORE_1 = "#000"
 TEXT_COLOR_WHITE = "#FFF"
 
@@ -78,6 +81,7 @@ MOBILE_COVER_IMAGE_9 = "http://writercreativity.com:8000/media/mobile/home_page_
 
 MOBILE_QUOTE_1 = ["Creativity is an art","And","Art is my passion"]
 MOBILE_QUOTE_2 = ["Don't disturb Me","I am reading","My Past"]
+MOBILE_QUOTE_3 = ["Readers are the ink","Of the pen","To Write","by Ajay Pal Singh"]
 MOBILE_COLORE_1 = "#000"
 
 
