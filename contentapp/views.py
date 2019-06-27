@@ -157,7 +157,7 @@ def about_us_page(request):
         else:
            about_us = AboutUs.objects.filter(about_us='about-us')
         data = append_baseUrl(about_us,"about-us")
-        return Response({"data":data},status=status.HTTP_200_OK)
+        return Response({"data":data, "writer_listing_pag_link":LINK_NAME_FOR_WRITERS_LISTING_PAGE},status=status.HTTP_200_OK)
 
     except Exception as error:
         print("heyyyyyyyyyyyyyyyyyyyyyyyy",error)

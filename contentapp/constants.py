@@ -131,3 +131,7 @@ POEM_SUBJECT_BY = "by Robert Frost"
 STORY_HEADING = "Story of the Week"
 STORY_SUBJECT = "Readers are the ink of the pen to Write"
 STORY_SUBJECT_BY = "by Ajay Pal Singh"
+
+LINK_NAME_FOR_WRITERS_LISTING_PAGE = "Breath of the WC"
+
+########################################################################
