@@ -208,16 +208,21 @@ def rating_email(request):
         email_otp_obj[0].otp_number = otp
         email_otp_obj[0].save()
 
-        name = name.split()[0]
+        if name:
+           name = (name.split()[0]).title()
+        else:
+           name="Reviewer"  
+
         # sending Email using otp
 
         html_content = render_to_string(
-                'mail_template.html', {'var_name': name.title(), 'body_content':SENT_EMAIL_WITH_OTP.format(otp,page_title.title())})
+                'mail_template.html', {'var_name': name, 'body_content':SENT_EMAIL_WITH_OTP.format(otp,page_title.title())})
         send_email(SUBJECT_FOR_OTP, html_content, [email])
 
         return Response(SENT_OTP, status=status.HTTP_200_OK)
 
     except Exception as error:
+        print("Heyyyyyyyyyy",error)
         return Response(MAIL_FAILD,status=status.HTTP_404_NOT_FOUND)
 
 def random_with_N_digits(n):

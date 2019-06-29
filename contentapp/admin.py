@@ -57,6 +57,7 @@ class AboutUsAdmin(SummernoteModelAdmin):
     def has_add_permission(self, request, obj=None):
         return False
 
+admin.site.site_url = None
 admin.site.register(UrlPostfixHistory,UrlPostfixHistoryadmin)
 admin.site.register(LoggingHistory)
 admin.site.register(AboutUs, AboutUsAdmin)
@@ -67,13 +68,14 @@ admin.site.register(EmailOTP)
 class UserAdminSite(AdminSite):
     site_header = "User Admin Site"
     site_title = "User Admin Portal"
-    index_title = "Welcome to User admin Portal"
+    index_title = "Welcome to writer admin Portal"
 
 
 class UserBlogAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
     summernote_fields = 'content'
     list_display = ('blog_part','title','total_hits')
     readonly_fields = ["total_hits"]
+
     #def save_model(self, request, obj, form, change):
     #       obj.blog_part="".join((obj.blog_part).split())
     #       obj.save()
@@ -165,6 +167,10 @@ class UserPoemAdmin(SummernoteModelAdmin):
 
 
 user_admin_site = UserAdminSite(name='user_admin')
+
+# Remove View Site link from django-admin Panel
+user_admin_site.site_url = None
+
 user_admin_site.register(UserBlog,UserBlogAdmin)
 user_admin_site.register(UserStory,UserStoryAdmin)
 user_admin_site.register(UserPoem,UserPoemAdmin)
