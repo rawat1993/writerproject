@@ -22,6 +22,7 @@ from datetime import datetime
 from django.utils import timezone
 # from background_task import background
 from contentapp.tasks import sent_notictaion_email_to_author
+import math
 
 def send_email(subject, send_message, toUser):
     """
@@ -462,9 +463,13 @@ def reviewers_detail(request):
 @api_view(['GET'])
 def top_writers_list(request):
 
-    filter_by = request.GET.get('filter_by','both')
+    filter_by = request.GET.get('filter_by','all')
+    page = request.GET.get('page',1)
     if filter_by=='top_poets':
        poets_sublist = find_top_writers()[1]
+       # taking first 10 top writers from whole listing
+       poets_sublist = poets_sublist[:10]
+
        if poets_sublist:
           data = []
           for obj in poets_sublist:
@@ -480,6 +485,9 @@ def top_writers_list(request):
 
     elif filter_by=='top_story_writer':
        story_writer_sublist = find_top_writers()[0]
+       # taking first 10 top writers from whole listing
+       story_writer_sublist = story_writer_sublist[:10]
+       
        if story_writer_sublist:
           data = []
           for obj in story_writer_sublist:
@@ -494,7 +502,7 @@ def top_writers_list(request):
           return Response(STORY_WRITERS, status=status.HTTP_404_NOT_FOUND)
 
 
-    elif filter_by=='both':
+    elif filter_by=='all':
        both_sublist = find_top_writers()[2]
        if both_sublist:
           data = []
@@ -505,7 +513,16 @@ def top_writers_list(request):
                   user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
               data.append({"name":user_obj.full_name,"user_photo":user_photo})
 
-          return Response(data,status=status.HTTP_200_OK)
+
+          # logic for pagination 
+          total = len(data)
+          total_pages = total / 10
+          total_pages = math.ceil(total_pages)
+          end_page = int(page) * 10
+          start_page = end_page - 10
+          request_data = data[start_page:end_page]
+
+          return Response({"data":request_data, "total_pages":total_pages}, status=status.HTTP_200_OK)
        else:
           return Response(NO_WRITERS, status=status.HTTP_404_NOT_FOUND)
 
