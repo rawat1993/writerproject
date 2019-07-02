@@ -514,15 +514,28 @@ def top_writers_list(request):
                   user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
               data.append({"name":user_obj.full_name,"user_photo":user_photo})
 
+              # for testing pagination functionality will remove later
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+
+
           if writer_search:
             data = [element for element in data if element['name'].lower().startswith(writer_search.lower())]
 
           # logic for pagination 
           total = len(data)
-          total_pages = total / 10
+          total_pages = total / 12
           total_pages = math.ceil(total_pages)
-          end_page = int(page) * 10
-          start_page = end_page - 10
+          end_page = int(page) * 12
+          start_page = end_page - 12
           request_data = data[start_page:end_page]
 
           return Response({"data":request_data, "total_pages":total_pages}, status=status.HTTP_200_OK)
