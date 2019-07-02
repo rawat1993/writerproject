@@ -464,6 +464,7 @@ def reviewers_detail(request):
 def top_writers_list(request):
 
     filter_by = request.GET.get('filter_by','all')
+    writer_search = request.GET.get('search',False)
     page = request.GET.get('page',1)
     if filter_by=='top_poets':
        poets_sublist = find_top_writers()[1]
@@ -479,7 +480,7 @@ def top_writers_list(request):
                   user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
               data.append({"name":user_obj.full_name,"user_photo":user_photo})
 
-          return Response(data,status=status.HTTP_200_OK)
+          return Response({"data":data},status=status.HTTP_200_OK)
        else:
           return Response(POETS, status=status.HTTP_404_NOT_FOUND)
 
@@ -487,7 +488,7 @@ def top_writers_list(request):
        story_writer_sublist = find_top_writers()[0]
        # taking first 10 top writers from whole listing
        story_writer_sublist = story_writer_sublist[:10]
-       
+
        if story_writer_sublist:
           data = []
           for obj in story_writer_sublist:
@@ -497,7 +498,7 @@ def top_writers_list(request):
                   user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
               data.append({"name":user_obj.full_name,"user_photo":user_photo})
 
-          return Response(data,status=status.HTTP_200_OK)
+          return Response({"data":data},status=status.HTTP_200_OK)
        else:
           return Response(STORY_WRITERS, status=status.HTTP_404_NOT_FOUND)
 
@@ -513,6 +514,8 @@ def top_writers_list(request):
                   user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
               data.append({"name":user_obj.full_name,"user_photo":user_photo})
 
+          if writer_search:
+            data = [element for element in data if element['name'].lower().startswith(writer_search.lower())]
 
           # logic for pagination 
           total = len(data)
