@@ -71,7 +71,7 @@ class UserBlogTitle(models.Model):
         ('YES', 'Yes'),
         ('NO', 'No'),
     )
-    view_on_website = models.URLField(null=True,blank=True,max_length=255,help_text="View this Blog content on website")    
+    view_on_website = models.URLField("Copy below links in browser to view blog Content",null=True,blank=True,max_length=255,editable=False)    
     published_content = models.CharField('Can We Publish This Blog?',help_text="Note: We will not added this blog in your blog list untill you will not select Yes ..!! Important:=> if you published your blog content once then you will not able to change blog content as well delete. For more info you can go through WC Terms & Conditions",max_length=10, choices=PUBLISHED_CONTENT_CHOICES, default='NO')
 
     total_hits = models.BigIntegerField('Total hits for this Blog',default=0,editable=False)
@@ -113,7 +113,7 @@ class UserStoryTitle(models.Model):
     title_choice = models.CharField('Title With Cover Photo',help_text="Show this title with cover photo",max_length=10, choices=TITLE_CHOICES, default='YES')
     total_hits = models.BigIntegerField('Total hits for this Stroy',default=0,editable=False)
     verified_content = models.BooleanField(default=True,editable=False)
-    view_on_website = models.URLField(null=True,blank=True,max_length=255,help_text="View this story content on website")
+    view_on_website = models.URLField("Copy below links in browser to view story Content",null=True,blank=True,max_length=255,editable=False)
 
     NOTIFICATION_CHOICES = (
         ('ON', 'ON'),
@@ -174,7 +174,7 @@ class UserPoem(models.Model):
     short_description = models.CharField('Poem Short Description',max_length=255,null=True,blank=True,help_text='Write short description about your poem')
     default_image = models.ImageField("Cover Photo",help_text="Set cover photo for this Poem", upload_to="imgae_path/")    
     content = models.TextField('Write Your Poem',help_text='Write your poem using images')
-    view_on_website = models.URLField("Click this link to view poem on website",null=True,blank=True,max_length=255,help_text="View This Poem Content on website")
+    view_on_website = models.URLField("Copy below links in browser to view poem Content",null=True,blank=True,max_length=255,editable=False)
     total_hits = models.BigIntegerField('Total hits for this poem',default=0,editable=False)
     verified_content = models.BooleanField(default=True,editable=False)
 

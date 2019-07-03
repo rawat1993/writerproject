@@ -128,7 +128,7 @@ class UserStoryAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
 
 class UserPoemAdmin(SummernoteModelAdmin):
     summernote_fields = 'content'
-    list_display = ('title','short_description','search_by')
+    list_display = ('title','search_by','published_content','view_on_website')
     # readonly_fields = ["published_content"]
 
     def has_change_permission(self, request, obj=None):
@@ -159,7 +159,7 @@ class UserPoemAdmin(SummernoteModelAdmin):
            obj.save()
 
            # create or updating the key
-           admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for='poem')
+           admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for=obj.search_by)
            admin_key_obj[0].key = key
            admin_key_obj[0].save()
 
@@ -207,7 +207,7 @@ user_admin_site.register(UserSignup,UserProfile)
 # User Blog Title
 
 class UserBlogTitleAdmin(SummernoteModelAdmin):
-    list_display = ('title','short_description','search_by')
+    list_display = ('title','search_by','published_content','view_on_website')
     def save_model(self, request, obj, form, change):
            obj.author = request.user
            obj.save()
@@ -215,6 +215,19 @@ class UserBlogTitleAdmin(SummernoteModelAdmin):
            if not obj.search_by:
               obj.search_by = genrate_random(all_data,obj.title)
               obj.save()
+
+           # Generate view link for the user
+           url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
+           key = uuid.uuid4()
+           generate_link = VIEW_LINK.format(url_postfix,'story',key)
+           obj.view_on_website = generate_link
+           obj.save()
+
+           # create or updating the key
+           admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for=obj.search_by)
+           admin_key_obj[0].key = key
+           admin_key_obj[0].save()
+              
            # Enter data in ContentVerified Table
            try:
               ContentVerified.objects.get(title=obj.search_by)
@@ -231,7 +244,7 @@ user_admin_site.register(UserBlogTitle,UserBlogTitleAdmin)
 
 
 class UserStroyTitleAdmin(SummernoteModelAdmin):
-    list_display = ('title','short_description','search_by')
+    list_display = ('title','search_by','published_content','view_on_website')
 
 
     def has_change_permission(self, request, obj=None):
@@ -263,7 +276,7 @@ class UserStroyTitleAdmin(SummernoteModelAdmin):
            obj.save()
 
            # create or updating the key
-           admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for='story')
+           admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for=obj.search_by)
            admin_key_obj[0].key = key
            admin_key_obj[0].save()
 

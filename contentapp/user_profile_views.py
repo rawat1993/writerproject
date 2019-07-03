@@ -66,7 +66,7 @@ class SubjectView(APIView):
             by_admin="NO"
             if admin_key:
                try:
-                  AdminKeys.objects.get(key=str(admin_key))
+                  AdminKeys.objects.get(key=admin_key,url_postfix=post_fix)
                   by_admin="YES"
                except Exception as e:
                   pass
