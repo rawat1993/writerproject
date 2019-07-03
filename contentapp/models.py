@@ -61,11 +61,6 @@ class UserBlogTitle(models.Model):
         ('NO', 'No'),
     )
     title_choice = models.CharField('Title With Cover Photo',help_text="Show this title with cover photo",max_length=10, choices=TITLE_CHOICES, default='YES')
-    BLOG_CHOICES = (
-        ('PUBLIC', 'Public'),
-        ('PRIVATE', 'Private'),
-    )
-    privacy = models.CharField(max_length=10, choices=BLOG_CHOICES, default='PUBLIC')
     NOTIFICATION_CHOICES = (
         ('ON', 'ON'),
         ('OFF', 'OFF'),
@@ -79,7 +74,7 @@ class UserBlogTitle(models.Model):
     view_on_website = models.URLField(null=True,blank=True,max_length=255,help_text="View this Blog content on website")    
     published_content = models.CharField('Can We Publish This Blog?',help_text="Note: We will not added this blog in your blog list untill you will not select Yes ..!! Important:=> if you published your blog content once then you will not able to change blog content as well delete. For more info you can go through WC Terms & Conditions",max_length=10, choices=PUBLISHED_CONTENT_CHOICES, default='NO')
 
-    total_hits = models.BigIntegerField('Total hits for this Blog',default=0)
+    total_hits = models.BigIntegerField('Total hits for this Blog',default=0,editable=False)
     verified_content = models.BooleanField(default=True,editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -95,7 +90,7 @@ class UserBlog(models.Model):
     title = models.ForeignKey(UserBlogTitle,on_delete=models.CASCADE,verbose_name = 'Select Your Blog')
     blog_part = models.CharField("Heading",max_length=25,help_text='write heading for this blog -> Maximum 25 characters allowed')
     content = models.TextField('Write Your Blog',help_text='Write your blog using images')
-    total_hits = models.BigIntegerField('Total hits for this page',default=0)
+    total_hits = models.BigIntegerField('Total hits for this page',default=0,editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -116,12 +111,7 @@ class UserStoryTitle(models.Model):
         ('NO', 'No'),
     )
     title_choice = models.CharField('Title With Cover Photo',help_text="Show this title with cover photo",max_length=10, choices=TITLE_CHOICES, default='YES')
-    STORY_CHOICES = (
-        ('PUBLIC', 'Public'),
-        ('PRIVATE', 'Private'),
-    )    
-    privacy = models.CharField(max_length=10, choices=STORY_CHOICES, default='PUBLIC')
-    total_hits = models.BigIntegerField('Total hits for this Stroy',default=0)
+    total_hits = models.BigIntegerField('Total hits for this Stroy',default=0,editable=False)
     verified_content = models.BooleanField(default=True,editable=False)
     view_on_website = models.URLField(null=True,blank=True,max_length=255,help_text="View this story content on website")
 
@@ -163,7 +153,7 @@ class UserStory(models.Model):
     title = models.ForeignKey(UserStoryTitle, on_delete=models.CASCADE,verbose_name = 'Select Your Story')
     story_seen_no = models.CharField('Heading',max_length=25,help_text='write a heading for this scene -> Maximum 25 characters allowed')
     content = models.TextField('Write Your Story',help_text='Write your stroy seen using images')
-    total_hits = models.BigIntegerField('Total hits for this page',default=0)
+    total_hits = models.BigIntegerField('Total hits for this page',default=0,editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
@@ -184,13 +174,8 @@ class UserPoem(models.Model):
     short_description = models.CharField('Poem Short Description',max_length=255,null=True,blank=True,help_text='Write short description about your poem')
     default_image = models.ImageField("Cover Photo",help_text="Set cover photo for this Poem", upload_to="imgae_path/")    
     content = models.TextField('Write Your Poem',help_text='Write your poem using images')
-    view_on_website = models.URLField(null=True,blank=True,max_length=255,help_text="View Poem on website")
-    POEM_CHOICES = (
-        ('PUBLIC', 'Public'),
-        ('PRIVATE', 'Private'),
-    )
-    privacy = models.CharField(max_length=10, choices=POEM_CHOICES, default='PUBLIC')
-    total_hits = models.BigIntegerField('Total hits for this poem',default=0)
+    view_on_website = models.URLField("Click this link to view poem on website",null=True,blank=True,max_length=255,help_text="View This Poem Content on website")
+    total_hits = models.BigIntegerField('Total hits for this poem',default=0,editable=False)
     verified_content = models.BooleanField(default=True,editable=False)
 
     NOTIFICATION_CHOICES = (
@@ -227,6 +212,8 @@ class UserPoem(models.Model):
         return self.title
     class Meta:
         verbose_name_plural = 'Add Poem'
+
+
 
 
 class AboutUs(models.Model):

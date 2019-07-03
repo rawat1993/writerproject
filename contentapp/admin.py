@@ -74,8 +74,7 @@ class UserAdminSite(AdminSite):
 
 class UserBlogAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
     summernote_fields = 'content'
-    list_display = ('blog_part','title','total_hits')
-    readonly_fields = ["total_hits"]
+    list_display = ('blog_part','title')
 
     #def save_model(self, request, obj, form, change):
     #       obj.blog_part="".join((obj.blog_part).split())
@@ -95,8 +94,7 @@ class UserBlogAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
 
 class UserStoryAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
     summernote_fields = 'content'
-    list_display = ('story_seen_no','title','total_hits') 
-    readonly_fields = ["total_hits"]
+    list_display = ('story_seen_no','title')
 
     def has_change_permission(self, request, obj=None):
       if not obj.__str__() =='None':     
@@ -130,8 +128,8 @@ class UserStoryAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
 
 class UserPoemAdmin(SummernoteModelAdmin):
     summernote_fields = 'content'
-    list_display = ('title','short_description','privacy','total_hits','search_by')
-    readonly_fields = ["total_hits"]
+    list_display = ('title','short_description','search_by')
+    # readonly_fields = ["published_content"]
 
     def has_change_permission(self, request, obj=None):
       if UserPoem.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(published_content='YES')):
@@ -209,8 +207,7 @@ user_admin_site.register(UserSignup,UserProfile)
 # User Blog Title
 
 class UserBlogTitleAdmin(SummernoteModelAdmin):
-    readonly_fields = ["total_hits"]
-    list_display = ('title','short_description','privacy','search_by','total_hits')
+    list_display = ('title','short_description','search_by')
     def save_model(self, request, obj, form, change):
            obj.author = request.user
            obj.save()
@@ -234,8 +231,7 @@ user_admin_site.register(UserBlogTitle,UserBlogTitleAdmin)
 
 
 class UserStroyTitleAdmin(SummernoteModelAdmin):
-    readonly_fields = ["total_hits"]
-    list_display = ('title','short_description','privacy','total_hits','search_by')
+    list_display = ('title','short_description','search_by')
 
 
     def has_change_permission(self, request, obj=None):

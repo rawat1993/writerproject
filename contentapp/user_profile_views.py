@@ -35,13 +35,13 @@ class UserProfileView(APIView):
             story_status = "no"
             blog_status = "no"
             poem_status = "no"
-            story_list = UserStoryTitle.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC'))
+            story_list = UserStoryTitle.objects.filter(Q(author__username=user_email) & Q(published_content='YES'))
             if story_list:
                story_status = "yes"
-            blog_list = UserBlogTitle.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC'))
+            blog_list = UserBlogTitle.objects.filter(Q(author__username=user_email) & Q(published_content='YES'))
             if blog_list:
                blog_status = "yes"
-            poem_list = UserPoem.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC'))
+            poem_list = UserPoem.objects.filter(Q(author__username=user_email) & Q(published_content='YES'))
             if poem_list:
                poem_status = "yes"
             return Response({"data":serializer.data,"story_status":story_status,"blog_status":blog_status,"poem_status":poem_status},status=status.HTTP_200_OK)
@@ -72,7 +72,7 @@ class SubjectView(APIView):
                   pass
 
             if subject==STORY:
-               story_list = UserStoryTitle.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC') & Q(verified_content=True)).order_by('-created_at')
+               story_list = UserStoryTitle.objects.filter(Q(author__username=user_email) & Q(verified_content=True)).order_by('-created_at')
                if not story_list:
                   return Response(NOT_AVAILABLE.format(STORY),status=status.HTTP_404_NOT_FOUND)
                page_obj = Paginator(story_list, 6)
@@ -81,7 +81,7 @@ class SubjectView(APIView):
                return Response({"data":serializer.data,"total_pages":page_obj.num_pages,"by_admin":by_admin},status=status.HTTP_200_OK)
 
             elif subject==BLOG:
-               blog_list = UserBlogTitle.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC') & Q(verified_content=True)).order_by('-created_at')
+               blog_list = UserBlogTitle.objects.filter(Q(author__username=user_email) & Q(verified_content=True)).order_by('-created_at')
                if not blog_list:
                   return Response(NOT_AVAILABLE.format(BLOG),status=status.HTTP_404_NOT_FOUND)
                page_obj = Paginator(blog_list, 6)
@@ -90,7 +90,7 @@ class SubjectView(APIView):
                return Response({"data":serializer.data,"total_pages":page_obj.num_pages,"by_admin":by_admin},status=status.HTTP_200_OK)
 
             elif subject==POEM:
-               poem_list = UserPoem.objects.filter(Q(author__username=user_email) & Q(privacy='PUBLIC') & Q(verified_content=True)).order_by('-created_at')
+               poem_list = UserPoem.objects.filter(Q(author__username=user_email) & Q(verified_content=True)).order_by('-created_at')
                if not poem_list:
                   return Response(NOT_AVAILABLE.format(POEM),status=status.HTTP_404_NOT_FOUND)
                page_obj = Paginator(poem_list, 6)
@@ -116,7 +116,7 @@ class TitleView(APIView):
             subject = kwargs['subject']
             title = kwargs['title']
             if subject==STORY:
-               user_stroy_detail = UserStory.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__privacy='PUBLIC') & Q(title__verified_content=True))).order_by('created_at')
+               user_stroy_detail = UserStory.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__verified_content=True))).order_by('created_at')
                if not user_stroy_detail:
                   return Response(TITLE_NOT_FOUND.format("Story"),status=status.HTTP_404_NOT_FOUND)
                seen_list = user_stroy_detail.values_list('story_seen_no',flat=True)
@@ -125,7 +125,7 @@ class TitleView(APIView):
                return Response({"data":data,"seen_list":seen_list},status=status.HTTP_200_OK)
 
             elif subject==BLOG:
-               blog_content = UserBlog.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__privacy='PUBLIC') & Q(title__verified_content=True))).order_by('created_at')
+               blog_content = UserBlog.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__verified_content=True))).order_by('created_at')
                if not blog_content:
                   return Response(TITLE_NOT_FOUND.format("Blog"),status=status.HTTP_404_NOT_FOUND)
                blog_part_list = blog_content.values_list('blog_part',flat=True)
@@ -134,7 +134,7 @@ class TitleView(APIView):
                return Response({"data":data,"seen_list":blog_part_list},status=status.HTTP_200_OK)
 
             elif subject==POEM:
-               poem_content = UserPoem.objects.filter(Q(author__username=user_email) & (Q(search_by=title) & Q(privacy='PUBLIC') & Q(verified_content=True)))
+               poem_content = UserPoem.objects.filter(Q(author__username=user_email) & (Q(search_by=title) & Q(verified_content=True)))
                if not poem_content:
                   return Response(TITLE_NOT_FOUND.format("Poem"),status=status.HTTP_404_NOT_FOUND)
                #serializer = UserPoemContentSerializer(poem_content, many=True)
@@ -185,7 +185,7 @@ class PageForTitleView(APIView):
             title = kwargs['title']
             page = kwargs['page']
             if subject==STORY:
-               user_stroy_detail = UserStory.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__privacy='PUBLIC') & Q(title__verified_content=True)))
+               user_stroy_detail = UserStory.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__verified_content=True)))
                if user_stroy_detail:
                   page_obj = user_stroy_detail.get(story_seen_no=page)
                else:
@@ -195,7 +195,7 @@ class PageForTitleView(APIView):
                return Response(serializer.data,status=status.HTTP_200_OK)
 
             elif subject==BLOG:
-                blog_content = UserBlog.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__privacy='PUBLIC') & Q(title__verified_content=True)))
+                blog_content = UserBlog.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__verified_content=True)))
                 if blog_content:
                    page_obj = blog_content.get(blog_part=page)
                 else:

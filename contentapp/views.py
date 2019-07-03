@@ -557,8 +557,8 @@ def find_top_writers():
     poem_calculation = []
     both_calculation = []
     for author_email in all_writers:
-        total_story = UserStoryTitle.objects.filter(author__email=author_email,privacy='PUBLIC',verified_content=True,total_reviewer__gte=1).values_list('overall_rating','total_reviewer')
-        total_poems = UserPoem.objects.filter(author__email=author_email,privacy='PUBLIC',verified_content=True,total_reviewer__gte=1).values_list('overall_rating','total_reviewer')
+        total_story = UserStoryTitle.objects.filter(author__email=author_email,verified_content=True,published_content='YES').values_list('overall_rating','total_reviewer')
+        total_poems = UserPoem.objects.filter(author__email=author_email,verified_content=True,published_content='YES').values_list('overall_rating','total_reviewer')
 
         story_total_rating = 0
         story_total_reviewer = 0
@@ -615,9 +615,9 @@ def arrange_best_writers_order(sub_li):
 @api_view(['GET'])
 def poem_story_of_the_week(request):
 
-    poem_queryset = UserPoem.objects.filter(total_reviewer__gte=1,verified_content=True,privacy='PUBLIC').order_by('-publish_date')
+    poem_queryset = UserPoem.objects.filter(total_reviewer__gte=1,verified_content=True,published_content='YES').order_by('-publish_date')
     poem_data = create_response_queryset(poem_queryset)
-    story_queryset = UserStoryTitle.objects.filter(total_reviewer__gte=1,verified_content=True,privacy='PUBLIC').order_by('-publish_date')
+    story_queryset = UserStoryTitle.objects.filter(total_reviewer__gte=1,verified_content=True,published_content='YES').order_by('-publish_date')
     story_data = create_response_queryset(story_queryset)
     return Response({"story_data":story_data,"poem_data":poem_data,"poem_heading":POEM_HEADING,"poem_subject":POEM_SUBJECT,"poem_subject_by":POEM_SUBJECT_BY,"story_heading":STORY_HEADING,"story_subject":STORY_SUBJECT,"story_subject_by":STORY_SUBJECT_BY},status=status.HTTP_200_OK)
 
