@@ -475,10 +475,11 @@ def top_writers_list(request):
           data = []
           for obj in poets_sublist:
               user_obj = UserSignup.objects.get(email=obj[0])
+              url_postfix = UrlPostfixHistory.objects.get(user_email=obj[0]).url_postfix
               user_photo = ""
               if user_obj.user_photo:
                   user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo,"url_postfix":url_postfix})
 
           return Response({"data":data},status=status.HTTP_200_OK)
        else:
@@ -493,10 +494,11 @@ def top_writers_list(request):
           data = []
           for obj in story_writer_sublist:
               user_obj = UserSignup.objects.get(email=obj[0])
+              url_postfix = UrlPostfixHistory.objects.get(user_email=obj[0]).url_postfix
               user_photo = ""
               if user_obj.user_photo:
                   user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo,"url_postfix":url_postfix})
 
           return Response({"data":data},status=status.HTTP_200_OK)
        else:
@@ -509,12 +511,17 @@ def top_writers_list(request):
           data = []
           for obj in both_sublist:
               user_obj = UserSignup.objects.get(email=obj[0])
+              url_postfix = UrlPostfixHistory.objects.get(user_email=obj[0]).url_postfix
               user_photo = ""
               if user_obj.user_photo:
                   user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo,"url_postfix":url_postfix})
 
               # for testing pagination functionality will remove later
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
+              data.append({"name":user_obj.full_name,"user_photo":user_photo})
               data.append({"name":user_obj.full_name,"user_photo":user_photo})
               data.append({"name":user_obj.full_name,"user_photo":user_photo})
               data.append({"name":user_obj.full_name,"user_photo":user_photo})

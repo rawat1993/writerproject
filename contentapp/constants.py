@@ -1,3 +1,9 @@
+#######################################################
+# Website link to generate view link
+VIEW_LINK = "http://writercreativity.com/{}/{}/?key={}"
+
+####################################################
+
 USER_EMAIL_ALREADY_EXISTS = "User already exists"
 MAIL_SUCCESSFULLY_SENT = "Activation mail has been sent successfully, Please check your Email"
 USER_NOT_FOUND = "User not found"

@@ -13,7 +13,7 @@ class UserStoryTitleSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = UserStoryTitle
-		fields = ('id','title', 'short_description','search_by','default_image','title_choice','created_at','overall_rating','total_reviewer','five_star_avg','four_star_avg','three_star_avg','two_star_avg','one_star_avg')
+		fields = ('id','title','published_content','short_description','search_by','default_image','title_choice','created_at','overall_rating','total_reviewer','five_star_avg','four_star_avg','three_star_avg','two_star_avg','one_star_avg')
 
 class UserStorySerializer(serializers.ModelSerializer):
 
@@ -25,7 +25,7 @@ class UserBlogTitleSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = UserBlogTitle
-		fields = ('id','title', 'short_description','search_by','default_image','title_choice','created_at')
+		fields = ('id','title','published_content','short_description','search_by','default_image','title_choice','created_at')
 
 class UserBlogSerializer(serializers.ModelSerializer):
 
@@ -38,7 +38,7 @@ class UserPoemSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = UserPoem
-		fields = ('id','title', 'short_description','search_by','default_image','title_choice','overall_rating','total_reviewer','five_star_avg','four_star_avg','three_star_avg','two_star_avg','one_star_avg')
+		fields = ('id','title','published_content','short_description','search_by','default_image','title_choice','overall_rating','total_reviewer','five_star_avg','four_star_avg','three_star_avg','two_star_avg','one_star_avg')
 
 class UserPoemContentSerializer(serializers.ModelSerializer):
 

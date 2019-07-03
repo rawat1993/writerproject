@@ -8,6 +8,7 @@ from .views import send_email
 from datetime import datetime
 from django.template.loader import render_to_string
 from django.db.models import Q
+import uuid
 
 
 # Register your models here.
@@ -99,14 +100,14 @@ class UserStoryAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
 
     def has_change_permission(self, request, obj=None):
       if not obj.__str__() =='None':     
-        if UserStory.objects.filter(Q(title__title=obj.__str__()) & Q(title__author=request.user) & Q(title__total_reviewer__gte=1)):
+        if UserStory.objects.filter(Q(title__title=obj.__str__()) & Q(title__author=request.user) & Q(title__published_content='YES')):
           return False
         else:
           return True
 
     def has_delete_permission(self, request, obj=None):
       if not obj.__str__() =='None':     
-        if UserStory.objects.filter(Q(title__title=obj.__str__()) & Q(title__author=request.user) & Q(title__total_reviewer__gte=1)):
+        if UserStory.objects.filter(Q(title__title=obj.__str__()) & Q(title__author=request.user) & Q(title__published_content='YES')):
           return False
         else:
           return True
@@ -119,7 +120,7 @@ class UserStoryAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
 
 
     def render_change_form(self, request, context, *args, **kwargs):
-        if kwargs['obj']==None or not UserStory.objects.filter(Q(title__title=kwargs['obj'].title.title) & Q(title__author=request.user) & Q(title__total_reviewer__gte=1)):
+        if kwargs['obj']==None or not UserStory.objects.filter(Q(title__title=kwargs['obj'].title.title) & Q(title__author=request.user) & Q(title__published_content='YES')):
           context['adminform'].form.fields['title'].queryset = UserStoryTitle.objects.filter(author=request.user, total_reviewer=0)
           return super(UserStoryAdmin, self).render_change_form(request, context, *args, **kwargs)     
         else:
@@ -133,18 +134,16 @@ class UserPoemAdmin(SummernoteModelAdmin):
     readonly_fields = ["total_hits"]
 
     def has_change_permission(self, request, obj=None):
-      if UserPoem.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(total_reviewer__gte=1)):
+      if UserPoem.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(published_content='YES')):
         return False
       else:
         return True
 
     def has_delete_permission(self, request, obj=None):
-      if UserPoem.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(total_reviewer__gte=1)):
+      if UserPoem.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(published_content='YES')):
         return False
       else:
         return True
-
-
 
     def save_model(self, request, obj, form, change):
            obj.author = request.user
@@ -153,11 +152,25 @@ class UserPoemAdmin(SummernoteModelAdmin):
            if not obj.search_by:
               obj.search_by = genrate_random(all_data,obj.title)
               obj.save()
+
+           # Generate view link for the user
+           url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
+           key = uuid.uuid4()
+           generate_link = VIEW_LINK.format(url_postfix,'poem',key)
+           obj.view_on_website = generate_link
+           obj.save()
+
+           # create or updating the key
+           admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for='poem')
+           admin_key_obj[0].key = key
+           admin_key_obj[0].save()
+
            # Enter data in ContentVerified Table
            try:
               ContentVerified.objects.get(title=obj.search_by)
            except:
               ContentVerified.objects.create(action_for='poem',title=obj.search_by)
+
 
     def get_queryset(self, request):
         qs = super(UserPoemAdmin, self).get_queryset(request)
@@ -226,13 +239,13 @@ class UserStroyTitleAdmin(SummernoteModelAdmin):
 
 
     def has_change_permission(self, request, obj=None):
-      if UserStoryTitle.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(total_reviewer__gte=1)):
+      if UserStoryTitle.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(published_content='YES')):
         return False
       else:
         return True
 
     def has_delete_permission(self, request, obj=None):
-      if UserStoryTitle.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(total_reviewer__gte=1)):
+      if UserStoryTitle.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(published_content='YES')):
         return False
       else:
         return True
@@ -245,6 +258,19 @@ class UserStroyTitleAdmin(SummernoteModelAdmin):
            if not obj.search_by:
               obj.search_by = genrate_random(all_data,obj.title)
               obj.save()
+
+           # Generate view link for the user
+           url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
+           key = uuid.uuid4()
+           generate_link = VIEW_LINK.format(url_postfix,'story',key)
+           obj.view_on_website = generate_link
+           obj.save()
+
+           # create or updating the key
+           admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for='story')
+           admin_key_obj[0].key = key
+           admin_key_obj[0].save()
+
            # Enter data in ContentVerified Table
            try:
               ContentVerified.objects.get(title=obj.search_by)
@@ -325,7 +351,7 @@ class FakeRatersAdmin(admin.ModelAdmin):
            obj.save()
 
 admin.site.register(FakeRaters,FakeRatersAdmin)
-
+admin.site.register(AdminKeys)
 
 ######################## Verified content logic ########################
 

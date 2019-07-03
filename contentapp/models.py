@@ -72,6 +72,13 @@ class UserBlogTitle(models.Model):
     )
     notification = models.CharField('Allow Notification for this Blog',max_length=10, choices=NOTIFICATION_CHOICES, default='ON')
 
+    PUBLISHED_CONTENT_CHOICES = (
+        ('YES', 'Yes'),
+        ('NO', 'No'),
+    )
+    view_on_website = models.URLField(null=True,blank=True,max_length=255,help_text="View this Blog content on website")    
+    published_content = models.CharField('Can We Publish This Blog?',help_text="Note: We will not added this blog in your blog list untill you will not select Yes ..!! Important:=> if you published your blog content once then you will not able to change blog content as well delete. For more info you can go through WC Terms & Conditions",max_length=10, choices=PUBLISHED_CONTENT_CHOICES, default='NO')
+
     total_hits = models.BigIntegerField('Total hits for this Blog',default=0)
     verified_content = models.BooleanField(default=True,editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -116,12 +123,18 @@ class UserStoryTitle(models.Model):
     privacy = models.CharField(max_length=10, choices=STORY_CHOICES, default='PUBLIC')
     total_hits = models.BigIntegerField('Total hits for this Stroy',default=0)
     verified_content = models.BooleanField(default=True,editable=False)
+    view_on_website = models.URLField(null=True,blank=True,max_length=255,help_text="View this story content on website")
 
     NOTIFICATION_CHOICES = (
         ('ON', 'ON'),
         ('OFF', 'OFF'),
     )
     notification = models.CharField('Allow Notification for this Story',max_length=10, choices=NOTIFICATION_CHOICES, default='ON')
+    PUBLISHED_CONTENT_CHOICES = (
+        ('YES', 'Yes'),
+        ('NO', 'No'),
+    )
+    published_content = models.CharField('Can We Publish This Story?',help_text="Note: We will not added this story in your story list untill you will not select Yes ..!! Important:=> if you published your story content once then you will not able to change Poem content as well delete. For more info you can go through WC Terms & Conditions",max_length=10, choices=PUBLISHED_CONTENT_CHOICES, default='NO')
 
     one_star_count = models.IntegerField(default=0,editable=False)
     two_star_count = models.IntegerField(default=0,editable=False)
@@ -171,6 +184,7 @@ class UserPoem(models.Model):
     short_description = models.CharField('Poem Short Description',max_length=255,null=True,blank=True,help_text='Write short description about your poem')
     default_image = models.ImageField("Cover Photo",help_text="Set cover photo for this Poem", upload_to="imgae_path/")    
     content = models.TextField('Write Your Poem',help_text='Write your poem using images')
+    view_on_website = models.URLField(null=True,blank=True,max_length=255,help_text="View Poem on website")
     POEM_CHOICES = (
         ('PUBLIC', 'Public'),
         ('PRIVATE', 'Private'),
@@ -184,6 +198,12 @@ class UserPoem(models.Model):
         ('OFF', 'OFF'),
     )
     notification = models.CharField('Allow Notification for this Poem',max_length=10, choices=NOTIFICATION_CHOICES, default='ON')
+
+    PUBLISHED_CONTENT_CHOICES = (
+        ('YES', 'Yes'),
+        ('NO', 'No'),
+    )
+    published_content = models.CharField('Can We Publish This Poem?',help_text="Note: We will not added this poem in your poem list untill you will not select Yes ..!! Important:=> if you published your poem content once then you will not able to change Poem content as well delete. For more info you can go through WC Terms & Conditions",max_length=10, choices=PUBLISHED_CONTENT_CHOICES, default='NO')
 
     one_star_count = models.IntegerField(default=0,editable=False)
     two_star_count = models.IntegerField(default=0,editable=False)
@@ -268,3 +288,12 @@ class ContentVerified(models.Model):
     class Meta:
         verbose_name_plural = 'Verify Content'
 
+
+# Model for Admin keys
+class AdminKeys(models.Model):
+    url_postfix = models.CharField(max_length=30,null=True,blank=True)
+    key_for = models.CharField(max_length=30,null=True,blank=True)
+    key = models.CharField(max_length=200,null=True,blank=True)
+
+    def __str__(self):
+        return self.key
