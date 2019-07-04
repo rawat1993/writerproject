@@ -107,16 +107,25 @@ class TitleView(APIView):
     def get(self,request,**kwargs):
         try:
             post_fix = kwargs['post_fix_value']
+            admin_key = request.GET.get('key',False)
             user_email = user_status(post_fix)
             if user_email == "NOT_FOUND":
                 return Response(USER_POSTFIX_NOT_FOUND,status=status.HTTP_404_NOT_FOUND)
             elif user_email == "USER_BLOCKED":
                  return Response(POSTFIX_STATUS,status=status.HTTP_401_UNAUTHORIZED)
 
+            by_admin="YES"
+            if admin_key:
+               try:
+                  AdminKeys.objects.get(key=admin_key,url_postfix=post_fix)
+                  by_admin="NO"
+               except Exception as e:
+                  pass
+
             subject = kwargs['subject']
             title = kwargs['title']
             if subject==STORY:
-               user_stroy_detail = UserStory.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__verified_content=True))).order_by('created_at')
+               user_stroy_detail = UserStory.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__verified_content=True) & Q(title__published_content=by_admin))).order_by('created_at')
                if not user_stroy_detail:
                   return Response(TITLE_NOT_FOUND.format("Story"),status=status.HTTP_404_NOT_FOUND)
                seen_list = user_stroy_detail.values_list('story_seen_no',flat=True)
@@ -125,7 +134,7 @@ class TitleView(APIView):
                return Response({"data":data,"seen_list":seen_list},status=status.HTTP_200_OK)
 
             elif subject==BLOG:
-               blog_content = UserBlog.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__verified_content=True))).order_by('created_at')
+               blog_content = UserBlog.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__verified_content=True) & Q(title__published_content=by_admin))).order_by('created_at')
                if not blog_content:
                   return Response(TITLE_NOT_FOUND.format("Blog"),status=status.HTTP_404_NOT_FOUND)
                blog_part_list = blog_content.values_list('blog_part',flat=True)
@@ -134,7 +143,7 @@ class TitleView(APIView):
                return Response({"data":data,"seen_list":blog_part_list},status=status.HTTP_200_OK)
 
             elif subject==POEM:
-               poem_content = UserPoem.objects.filter(Q(author__username=user_email) & (Q(search_by=title) & Q(verified_content=True)))
+               poem_content = UserPoem.objects.filter(Q(author__username=user_email) & (Q(search_by=title) & Q(verified_content=True) & Q(title__published_content=by_admin)))
                if not poem_content:
                   return Response(TITLE_NOT_FOUND.format("Poem"),status=status.HTTP_404_NOT_FOUND)
                #serializer = UserPoemContentSerializer(poem_content, many=True)
