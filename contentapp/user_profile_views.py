@@ -63,40 +63,40 @@ class SubjectView(APIView):
                  return Response(POSTFIX_STATUS,status=status.HTTP_401_UNAUTHORIZED)
             subject = kwargs['subject']
 
-            by_admin="NO"
+            by_admin="YES"
             if admin_key:
                try:
                   AdminKeys.objects.get(key=admin_key,url_postfix=post_fix)
-                  by_admin="YES"
+                  by_admin="NO"
                except Exception as e:
                   pass
 
             if subject==STORY:
-               story_list = UserStoryTitle.objects.filter(Q(author__username=user_email) & Q(verified_content=True)).order_by('-created_at')
+               story_list = UserStoryTitle.objects.filter(Q(author__username=user_email) & Q(verified_content=True) & Q(published_content=by_admin)).order_by('-created_at')
                if not story_list:
                   return Response(NOT_AVAILABLE.format(STORY),status=status.HTTP_404_NOT_FOUND)
                page_obj = Paginator(story_list, 6)
                requested_page = page_obj.page(requested_page_no)
                serializer = UserStoryTitleSerializer(requested_page, many=True)
-               return Response({"data":serializer.data,"total_pages":page_obj.num_pages,"by_admin":by_admin},status=status.HTTP_200_OK)
+               return Response({"data":serializer.data,"total_pages":page_obj.num_pages},status=status.HTTP_200_OK)
 
             elif subject==BLOG:
-               blog_list = UserBlogTitle.objects.filter(Q(author__username=user_email) & Q(verified_content=True)).order_by('-created_at')
+               blog_list = UserBlogTitle.objects.filter(Q(author__username=user_email) & Q(verified_content=True) & Q(published_content=by_admin)).order_by('-created_at')
                if not blog_list:
                   return Response(NOT_AVAILABLE.format(BLOG),status=status.HTTP_404_NOT_FOUND)
                page_obj = Paginator(blog_list, 6)
                requested_page = page_obj.page(requested_page_no)
                serializer = UserBlogTitleSerializer(requested_page, many=True)
-               return Response({"data":serializer.data,"total_pages":page_obj.num_pages,"by_admin":by_admin},status=status.HTTP_200_OK)
+               return Response({"data":serializer.data,"total_pages":page_obj.num_pages},status=status.HTTP_200_OK)
 
             elif subject==POEM:
-               poem_list = UserPoem.objects.filter(Q(author__username=user_email) & Q(verified_content=True)).order_by('-created_at')
+               poem_list = UserPoem.objects.filter(Q(author__username=user_email) & Q(verified_content=True) & Q(published_content=by_admin)).order_by('-created_at')
                if not poem_list:
                   return Response(NOT_AVAILABLE.format(POEM),status=status.HTTP_404_NOT_FOUND)
                page_obj = Paginator(poem_list, 6)
                requested_page = page_obj.page(requested_page_no)
                serializer = UserPoemSerializer(requested_page, many=True)
-               return Response({"data":serializer.data,"total_pages":page_obj.num_pages,"by_admin":by_admin},status=status.HTTP_200_OK)
+               return Response({"data":serializer.data,"total_pages":page_obj.num_pages},status=status.HTTP_200_OK)
 
             return Response(URL_NOT_CORRECT,status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
