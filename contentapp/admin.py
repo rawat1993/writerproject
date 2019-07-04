@@ -119,7 +119,7 @@ class UserStoryAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
 
     def render_change_form(self, request, context, *args, **kwargs):
         if kwargs['obj']==None or not UserStory.objects.filter(Q(title__title=kwargs['obj'].title.title) & Q(title__author=request.user) & Q(title__published_content='YES')):
-          context['adminform'].form.fields['title'].queryset = UserStoryTitle.objects.filter(author=request.user, total_reviewer=0)
+          context['adminform'].form.fields['title'].queryset = UserStoryTitle.objects.filter(author=request.user, published_content='NO')
           return super(UserStoryAdmin, self).render_change_form(request, context, *args, **kwargs)     
         else:
            # context['adminform'].form.fields['title'].queryset = UserStory.objects.filter(title__author=request.user)
@@ -227,7 +227,7 @@ class UserBlogTitleAdmin(SummernoteModelAdmin):
            admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for=obj.search_by)
            admin_key_obj[0].key = key
            admin_key_obj[0].save()
-              
+
            # Enter data in ContentVerified Table
            try:
               ContentVerified.objects.get(title=obj.search_by)
