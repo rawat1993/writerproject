@@ -143,7 +143,7 @@ class TitleView(APIView):
                return Response({"data":data,"seen_list":blog_part_list},status=status.HTTP_200_OK)
 
             elif subject==POEM:
-               poem_content = UserPoem.objects.filter(Q(author__username=user_email) & (Q(search_by=title) & Q(verified_content=True) & Q(title__published_content=by_admin)))
+               poem_content = UserPoem.objects.filter(Q(author__username=user_email) & (Q(search_by=title) & Q(verified_content=True) & Q(published_content=by_admin)))
                if not poem_content:
                   return Response(TITLE_NOT_FOUND.format("Poem"),status=status.HTTP_404_NOT_FOUND)
                #serializer = UserPoemContentSerializer(poem_content, many=True)
