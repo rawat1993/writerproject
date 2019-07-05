@@ -280,7 +280,7 @@ class UserStroyTitleAdmin(SummernoteModelAdmin):
            else:   
               url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
               key = uuid.uuid4()
-              generate_link = VIEW_LINK.format(url_postfix,'poem',key)
+              generate_link = VIEW_LINK.format(url_postfix,'story',key)
               UserStoryTitle.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
               UserPoem.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
 
