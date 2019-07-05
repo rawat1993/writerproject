@@ -161,10 +161,9 @@ class UserPoemAdmin(SummernoteModelAdmin):
               key = uuid.uuid4()
               generate_link = VIEW_LINK.format(url_postfix,'poem',key)
               UserPoem.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
-              UserStoryTitle.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
 
               # create or updating the key
-              admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix)
+              admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for='poem')
               admin_key_obj[0].key = key
               admin_key_obj[0].save()
 
@@ -282,10 +281,9 @@ class UserStroyTitleAdmin(SummernoteModelAdmin):
               key = uuid.uuid4()
               generate_link = VIEW_LINK.format(url_postfix,'story',key)
               UserStoryTitle.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
-              UserPoem.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
 
               # create or updating the key
-              admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix)
+              admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for='story')
               admin_key_obj[0].key = key
               admin_key_obj[0].save()
 

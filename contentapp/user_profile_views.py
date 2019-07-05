@@ -66,7 +66,7 @@ class SubjectView(APIView):
             by_admin="YES"
             if admin_key:
                try:
-                  AdminKeys.objects.get(key=admin_key,url_postfix=post_fix)
+                  AdminKeys.objects.get(key=admin_key,url_postfix=post_fix,key_for=subject)
                   by_admin="NO"
                except Exception as e:
                   pass
@@ -115,14 +115,14 @@ class TitleView(APIView):
                  return Response(POSTFIX_STATUS,status=status.HTTP_401_UNAUTHORIZED)
 
             by_admin="YES"
+            subject = kwargs['subject']
             if admin_key:
                try:
-                  AdminKeys.objects.get(key=admin_key,url_postfix=post_fix)
+                  AdminKeys.objects.get(key=admin_key,url_postfix=post_fix,key_for=subject)
                   by_admin="NO"
                except Exception as e:
                   pass
 
-            subject = kwargs['subject']
             title = kwargs['title']
             if subject==STORY:
                user_stroy_detail = UserStory.objects.filter(Q(title__author__username=user_email) & (Q(title__search_by=title) & Q(title__verified_content=True) & Q(title__published_content=by_admin))).order_by('created_at')
