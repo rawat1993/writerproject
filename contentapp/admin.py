@@ -152,16 +152,21 @@ class UserPoemAdmin(SummernoteModelAdmin):
               obj.save()
 
            # Generate view link for the user
-           url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
-           key = uuid.uuid4()
-           generate_link = VIEW_LINK.format(url_postfix,'poem',key)
-           obj.view_on_website = generate_link
-           obj.save()
 
-           # create or updating the key
-           admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for=obj.search_by)
-           admin_key_obj[0].key = key
-           admin_key_obj[0].save()
+           if obj.published_content=='YES':
+              obj.view_on_website = ""
+              obj.save()
+           else:   
+              url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
+              key = uuid.uuid4()
+              generate_link = VIEW_LINK.format(url_postfix,'poem',key)
+              UserPoem.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
+              UserStoryTitle.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
+
+              # create or updating the key
+              admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix)
+              admin_key_obj[0].key = key
+              admin_key_obj[0].save()
 
            # Enter data in ContentVerified Table
            try:
@@ -269,16 +274,20 @@ class UserStroyTitleAdmin(SummernoteModelAdmin):
               obj.save()
 
            # Generate view link for the user
-           url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
-           key = uuid.uuid4()
-           generate_link = VIEW_LINK.format(url_postfix,'story',key)
-           obj.view_on_website = generate_link
-           obj.save()
+           if obj.published_content=='YES':
+              obj.view_on_website = ""
+              obj.save()
+           else:   
+              url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
+              key = uuid.uuid4()
+              generate_link = VIEW_LINK.format(url_postfix,'poem',key)
+              UserStoryTitle.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
+              UserPoem.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
 
-           # create or updating the key
-           admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for=obj.search_by)
-           admin_key_obj[0].key = key
-           admin_key_obj[0].save()
+              # create or updating the key
+              admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix)
+              admin_key_obj[0].key = key
+              admin_key_obj[0].save()
 
            # Enter data in ContentVerified Table
            try:
