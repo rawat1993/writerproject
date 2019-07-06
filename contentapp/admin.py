@@ -145,7 +145,7 @@ class UserPoemAdmin(SummernoteModelAdmin):
 
     def save_model(self, request, obj, form, change):
            obj.author = request.user
-           obj.coming_soon = "Coming Soon"
+           obj.coming_soon = "Awaiting Publish"
            obj.save()
            all_data = UserPoem.objects.filter(author=obj.author)
            if not obj.search_by:
@@ -268,7 +268,7 @@ class UserStroyTitleAdmin(SummernoteModelAdmin):
 
     def save_model(self, request, obj, form, change):
            obj.author = request.user
-           obj.coming_soon = "Coming Soon"
+           obj.coming_soon = "Awaiting Publish"
            obj.save()
            all_data = UserStoryTitle.objects.filter(author=obj.author)
            if not obj.search_by:
