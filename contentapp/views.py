@@ -19,7 +19,6 @@ from django.shortcuts import render_to_response
 from random import randint
 from django.core.paginator import Paginator
 from datetime import datetime
-from django.utils import timezone
 # from background_task import background
 from contentapp.tasks import sent_notictaion_email_to_author
 import math
@@ -326,9 +325,6 @@ def insert_star_value(star_value, page_type, search_by):
      elif star_value == 5:
           page_type_obj.five_star_count = page_type_obj.five_star_count + 1
 
-     if page_type_obj.total_reviewer==0:
-        page_type_obj.publish_date = timezone.now()
-
      page_type_obj.total_reviewer = page_type_obj.total_reviewer + 1
      page_type_obj.save()
 
@@ -615,9 +611,9 @@ def arrange_best_writers_order(sub_li):
 @api_view(['GET'])
 def poem_story_of_the_week(request):
 
-    poem_queryset = UserPoem.objects.filter(total_reviewer__gte=1,verified_content=True,published_content='YES').order_by('-publish_date')
+    poem_queryset = UserPoem.objects.filter(verified_content=True,published_content='YES').order_by('-updated_at')
     poem_data = create_response_queryset(poem_queryset)
-    story_queryset = UserStoryTitle.objects.filter(total_reviewer__gte=1,verified_content=True,published_content='YES').order_by('-publish_date')
+    story_queryset = UserStoryTitle.objects.filter(verified_content=True,published_content='YES').order_by('-updated_at')
     story_data = create_response_queryset(story_queryset)
     return Response({"story_data":story_data,"poem_data":poem_data,"poem_heading":POEM_HEADING,"poem_subject":POEM_SUBJECT,"poem_subject_by":POEM_SUBJECT_BY,"story_heading":STORY_HEADING,"story_subject":STORY_SUBJECT,"story_subject_by":STORY_SUBJECT_BY},status=status.HTTP_200_OK)
 
@@ -627,5 +623,5 @@ def create_response_queryset(queryset_obj):
         cover_photo = HOST_NAME+"/media/"+str(obj.default_image)
         auther_name = UserSignup.objects.get(email=obj.author.email).full_name
         author_url = UrlPostfixHistory.objects.get(user_email=obj.author.email).url_postfix
-        data.append({"title":obj.title,"search_by":obj.search_by,"cover_photo":cover_photo,"publish_date":obj.publish_date,"author_name":auther_name,"overall_rating":obj.overall_rating,"post_fix":author_url,"title_choice":obj.title_choice})
+        data.append({"title":obj.title,"search_by":obj.search_by,"cover_photo":cover_photo,"publish_date":obj.updated_at,"author_name":auther_name,"overall_rating":obj.overall_rating,"post_fix":author_url,"title_choice":obj.title_choice})
     return data

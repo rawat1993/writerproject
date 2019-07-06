@@ -73,12 +73,12 @@ class UserBlogTitle(models.Model):
     )
     view_on_website = models.URLField("Copy below links in browser to view blog Content",null=True,blank=True,max_length=255,editable=False)    
     published_content = models.CharField('Can We Publish This Blog?',help_text="Note: We will not added this blog in your blog list untill you will not select Yes ..!! Important:=> if you published your blog content once then you will not able to change blog content as well delete. For more info you can go through WC Terms & Conditions",max_length=10, choices=PUBLISHED_CONTENT_CHOICES, default='NO')
+    coming_soon = models.CharField(max_length=50,null=True,blank=True,editable=False)
 
     total_hits = models.BigIntegerField('Total hits for this Blog',default=0,editable=False)
     verified_content = models.BooleanField(default=True,editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    publish_date = models.DateTimeField(blank=True, null=True, editable=False)    
+    updated_at = models.DateTimeField(auto_now=True)    
 
     def __str__(self):
         return self.title
@@ -125,6 +125,7 @@ class UserStoryTitle(models.Model):
         ('NO', 'No'),
     )
     published_content = models.CharField('Can We Publish This Story?',help_text="Note: We will not added this story in your story list untill you will not select Yes ..!! Important:=> if you published your story content once then you will not able to change Poem content as well delete. For more info you can go through WC Terms & Conditions",max_length=10, choices=PUBLISHED_CONTENT_CHOICES, default='NO')
+    coming_soon = models.CharField(max_length=50,null=True,blank=True,editable=False)
 
     one_star_count = models.IntegerField(default=0,editable=False)
     two_star_count = models.IntegerField(default=0,editable=False)
@@ -142,7 +143,6 @@ class UserStoryTitle(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    publish_date = models.DateTimeField(blank=True, null=True, editable=False)
 
     def __str__(self):
         return self.title
@@ -189,6 +189,7 @@ class UserPoem(models.Model):
         ('NO', 'No'),
     )
     published_content = models.CharField('Can We Publish This Poem?',help_text="Note: We will not added this poem in your poem list untill you will not select Yes ..!! Important:=> if you published your poem content once then you will not able to change Poem content as well delete. For more info you can go through WC Terms & Conditions",max_length=10, choices=PUBLISHED_CONTENT_CHOICES, default='NO')
+    coming_soon = models.CharField(max_length=50,null=True,blank=True,editable=False)
 
     one_star_count = models.IntegerField(default=0,editable=False)
     two_star_count = models.IntegerField(default=0,editable=False)
@@ -206,7 +207,6 @@ class UserPoem(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    publish_date = models.DateTimeField(blank=True, null=True, editable=False)
 
     def __str__(self):
         return self.title

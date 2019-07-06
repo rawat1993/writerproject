@@ -145,6 +145,7 @@ class UserPoemAdmin(SummernoteModelAdmin):
 
     def save_model(self, request, obj, form, change):
            obj.author = request.user
+           obj.coming_soon = "Coming Soon"
            obj.save()
            all_data = UserPoem.objects.filter(author=obj.author)
            if not obj.search_by:
@@ -155,6 +156,7 @@ class UserPoemAdmin(SummernoteModelAdmin):
 
            if obj.published_content=='YES':
               obj.view_on_website = ""
+              obj.coming_soon = ""
               obj.save()
            else:   
               url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
@@ -266,6 +268,7 @@ class UserStroyTitleAdmin(SummernoteModelAdmin):
 
     def save_model(self, request, obj, form, change):
            obj.author = request.user
+           obj.coming_soon = "Coming Soon"
            obj.save()
            all_data = UserStoryTitle.objects.filter(author=obj.author)
            if not obj.search_by:
@@ -275,6 +278,7 @@ class UserStroyTitleAdmin(SummernoteModelAdmin):
            # Generate view link for the user
            if obj.published_content=='YES':
               obj.view_on_website = ""
+              obj.coming_soon = ""
               obj.save()
            else:   
               url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
