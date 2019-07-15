@@ -209,7 +209,6 @@ class UserProfile(admin.ModelAdmin):
 user_admin_site.register(UserSignup,UserProfile)
 
 
-
 # User Blog Title
 
 class UserBlogTitleAdmin(SummernoteModelAdmin):
@@ -421,3 +420,103 @@ def retun_user_email(obj):
     return user_email,user_name,title_name,title_obj
 
 admin.site.register(ContentVerified,ContentVerifiedAdmin)
+
+
+# Registeres Quotes Model
+
+class UserQuotesAdmin(SummernoteModelAdmin):
+    summernote_fields = 'content'
+    list_display = ('quote_id','published_content','view_on_website')
+    search_fields = ('id',)
+
+    def has_change_permission(self, request, obj=None):
+      try:
+        if UserQuotes.objects.filter(Q(id=int(obj.__str__())) & Q(author=request.user) & Q(published_content='YES')):
+          return False
+        else:
+          return True
+      except:
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+      try:
+        if UserQuotes.objects.filter(Q(id=int(obj.__str__())) & Q(author=request.user) & Q(published_content='YES')):
+          return False
+        else:
+          return True
+      except:
+        return True    
+
+    def save_model(self, request, obj, form, change):
+           obj.author = request.user
+           obj.coming_soon = "Awaiting Publish"
+           obj.save()
+
+           # Generate view link for the user
+           if obj.published_content=='YES':
+              obj.view_on_website = ""
+              obj.coming_soon = ""
+              obj.save()
+           else:   
+              url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
+              key = uuid.uuid4()
+              generate_link = VIEW_LINK.format(url_postfix,'quotes',key)
+              UserQuotes.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
+
+              # create or updating the key
+              admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for='quotes')
+              admin_key_obj[0].key = key
+              admin_key_obj[0].save()
+
+           # Enter data in ContentVerified Table
+           try:
+              obj.quote_id = str(obj.id)
+              obj.save()         
+              QuoteContentVerified.objects.get(quote_id=str(obj.id))
+           except:
+              QuoteContentVerified.objects.create(quote_id=str(obj.id))
+
+    def get_queryset(self, request):
+        qs = super(UserQuotesAdmin, self).get_queryset(request)
+        # if request.user.is_superuser:
+        #     return qs
+        return qs.filter(author=request.user)
+
+user_admin_site.register(UserQuotes,UserQuotesAdmin)
+
+
+class QuoteContentVerifiedAdmin(admin.ModelAdmin):
+    list_display = ('quote_id','resion','action_taken_by','updated_at','created_at')
+    readonly_fields = ['quote_id','action_taken_by']
+    search_fields = ('quote_id',)
+    def has_delete_permission(self, request, obj=None):
+        return False
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def save_model(self, request, obj, form, change):
+           obj.action_taken_by = request.user
+           obj.updated_at = datetime.now()
+           obj.save()
+
+           user_quote = UserQuotes.objects.get(id=obj.quote_id)
+           email = user_quote.author.email
+           username = UserSignup.objects.get(email=email).full_name.split()[0]
+
+           if obj.resion=='COPYRIGHT':
+                 body_content = COPYRIGHT_EMAIL.format(obj.quote_id,'Quote')
+                 user_quote.verified_content = False
+                 user_quote.save()
+           elif obj.resion=='SEXUAL':
+                 body_content = SEXUAL_CONTENT_EMAIL.format(obj.quote_id,'Quote')
+                 user_quote.verified_content = False
+                 user_quote.save()
+           elif obj.resion=='ACTIVE':
+                 body_content = ACTIVE_CONTENT_EMAIL.format(obj.quote_id,'Quote')
+                 user_quote.verified_content = True
+                 user_quote.save()
+
+           html_content = render_to_string('mail_template.html', {'var_name': username.title(), 'body_content':body_content,'terms_conditions':WC_TERMS_AND_CONDTIONS})
+           send_email(SUBJECT_FOR_VERIFY_CONTENT, html_content, [email])
+
+admin.site.register(QuoteContentVerified,QuoteContentVerifiedAdmin)

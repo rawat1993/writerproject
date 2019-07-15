@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from contentapp.models import UserSignup,UrlPostfixHistory,AboutUs,FakeRaters,Rating,EmailOTP,UserStoryTitle,UserPoem
+from contentapp.models import UserSignup,UrlPostfixHistory,AboutUs,FakeRaters,Rating,EmailOTP,UserStoryTitle,UserPoem,UserQuotes
 from contentapp.serializers import UserSignup_Serializer
 from django.contrib.auth.models import User
 from .constants import *
@@ -615,7 +615,12 @@ def poem_story_of_the_week(request):
     poem_data = create_response_queryset(poem_queryset)
     story_queryset = UserStoryTitle.objects.filter(verified_content=True,published_content='YES').order_by('-updated_at')
     story_data = create_response_queryset(story_queryset)
-    return Response({"story_data":story_data,"poem_data":poem_data,"poem_heading":POEM_HEADING,"poem_subject":POEM_SUBJECT,"poem_subject_by":POEM_SUBJECT_BY,"story_heading":STORY_HEADING,"story_subject":STORY_SUBJECT,"story_subject_by":STORY_SUBJECT_BY},status=status.HTTP_200_OK)
+
+    # Quotes Data for this week
+    quotes_queryset = UserQuotes.objects.filter(verified_content=True,published_content='YES').order_by('-updated_at')
+    quotes_data = append_baseUrl(quotes_queryset,"quotes_of_the_week")
+
+    return Response({"story_data":story_data,"poem_data":poem_data,"quotes_data":quotes_data,"poem_heading":POEM_HEADING,"poem_subject":POEM_SUBJECT,"story_heading":STORY_HEADING,"story_subject":STORY_SUBJECT,"quotes_heading":QUOTE_HEADING,},status=status.HTTP_200_OK)
 
 def create_response_queryset(queryset_obj):
     data = []

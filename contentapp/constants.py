@@ -30,6 +30,7 @@ POSTFIX_STATUS = "You are Blocked by Admin Please contact to WC Team"
 STORY = "story"
 BLOG = "blog"
 POEM = "poem"
+QUOTES = "quotes"
 
 
 ############# Url PostFix Availability Message ################
@@ -140,4 +141,8 @@ STORY_SUBJECT_BY = "by Ajay Pal Singh"
 
 LINK_NAME_FOR_WRITERS_LISTING_PAGE = "Breath of the WC"
 
-########################################################################
+####################### Quotes Messages #############################
+QUOTES_NOT_AVAILABLE = "Quotes are not available for this user"
+QUOTES_ID_NOT_FOUND = "Quote Content not found this quote-id"
+QUOTE_HEADING = "Quotes of the Week"
+DEFAULT_IMAGE_PATH = "http://writercreativity.com:8000/media/mobile/home_image.jpg"

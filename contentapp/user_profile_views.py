@@ -2,7 +2,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from contentapp.models import UrlPostfixHistory,UserSignup,UserStoryTitle,UserBlogTitle,UserPoem,UserStory,UserBlog,AdminKeys
+from contentapp.models import UrlPostfixHistory,UserSignup,UserStoryTitle,UserBlogTitle,UserPoem,UserStory,UserBlog,AdminKeys,UserQuotes
 from contentapp.serializers import UserSignup_Serializer,UserStoryTitleSerializer,UserBlogTitleSerializer,UserPoemSerializer,UserStorySerializer,UserPoemContentSerializer,UserBlogSerializer
 from .constants import *
 from django.db.models import Q
@@ -35,6 +35,7 @@ class UserProfileView(APIView):
             story_status = "no"
             blog_status = "no"
             poem_status = "no"
+            quotes_status = "no"
             story_list = UserStoryTitle.objects.filter(Q(author__username=user_email) & Q(published_content='YES'))
             if story_list:
                story_status = "yes"
@@ -44,7 +45,11 @@ class UserProfileView(APIView):
             poem_list = UserPoem.objects.filter(Q(author__username=user_email) & Q(published_content='YES'))
             if poem_list:
                poem_status = "yes"
-            return Response({"data":serializer.data,"story_status":story_status,"blog_status":blog_status,"poem_status":poem_status},status=status.HTTP_200_OK)
+            quotes_list = UserQuotes.objects.filter(Q(author__username=user_email) & Q(published_content='YES'))
+            if quotes_list:
+               quotes_status = "yes"
+
+            return Response({"data":serializer.data,"story_status":story_status,"blog_status":blog_status,"poem_status":poem_status,"quotes_status":quotes_status},status=status.HTTP_200_OK)
         except Exception as error:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -98,6 +103,16 @@ class SubjectView(APIView):
                serializer = UserPoemSerializer(requested_page, many=True)
                return Response({"data":serializer.data,"total_pages":page_obj.num_pages},status=status.HTTP_200_OK)
 
+            elif subject==QUOTES:
+               quotes_list = UserQuotes.objects.filter(Q(author__username=user_email) & Q(verified_content=True) & Q(published_content=by_admin)).order_by('-created_at')
+               if not quotes_list:
+                  return Response(QUOTES_NOT_AVAILABLE,status=status.HTTP_404_NOT_FOUND)
+               page_obj = Paginator(quotes_list, 6)
+               requested_page = page_obj.page(requested_page_no)
+               data = append_baseUrl(requested_page,"quotes")
+               return Response({"data":data,"total_pages":page_obj.num_pages},status=status.HTTP_200_OK)
+
+
             return Response(URL_NOT_CORRECT,status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -150,6 +165,13 @@ class TitleView(APIView):
                data = append_baseUrl(poem_content,"poem")
                return Response({"data":data},status=status.HTTP_200_OK)
 
+            elif subject==QUOTES:
+               quotes_list = UserQuotes.objects.filter(Q(author__username=user_email) & (Q(quote_id=str(title)) & Q(verified_content=True) & Q(published_content=by_admin)))
+               if not quotes_list:
+                  return Response(QUOTES_ID_NOT_FOUND,status=status.HTTP_404_NOT_FOUND)
+               data = append_baseUrl(quotes_list,"quotes")
+               return Response({"data":data},status=status.HTTP_200_OK)
+
             return Response(URL_NOT_CORRECT,status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
             print("Errrror==>",error)
@@ -162,7 +184,11 @@ def append_baseUrl(queryset_obj,object_type):
         content_data = obj.content
         r = re.compile('(?<=src=").*?(?=")')
         src_list = r.findall(content_data)
+
+        # default image path for Quotes
+        default_image = DEFAULT_IMAGE_PATH
         if src_list:
+           default_image = None
            for src in src_list:
                if src.startswith("/media"):
                   content_data = content_data.replace(
@@ -175,6 +201,13 @@ def append_baseUrl(queryset_obj,object_type):
            updated_list.append({"id":obj.id,"title":obj.title,"short_description":obj.short_description,"content":content_data})
         elif object_type=="about-us":
            updated_list.append({"content":content_data})
+        elif object_type=="quotes":
+           updated_list.append({"quote_id":obj.quote_id,"content":content_data,"default_image":default_image})
+        elif object_type=="quotes_of_the_week":
+           auther_name = UserSignup.objects.get(email=obj.author.email).full_name
+           author_url = UrlPostfixHistory.objects.get(user_email=obj.author.email).url_postfix
+           updated_list.append({"quote_id":obj.quote_id,"content":content_data,"default_image":default_image,"publish_date":obj.updated_at,"post_fix":author_url,"author_name":auther_name})           
+
 
     return updated_list
 

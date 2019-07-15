@@ -214,6 +214,52 @@ class UserPoem(models.Model):
         verbose_name_plural = 'Add Poem'
 
 
+class UserQuotes(models.Model):
+    quote_id = models.CharField("Your Quote ID",max_length=50,editable=False)
+    author = models.ForeignKey(User, on_delete=models.CASCADE,editable=False)    
+    content = models.TextField('Write Your Quote',help_text='Write your quote content')
+    view_on_website = models.URLField("Copy below links in browser to view quote Content",null=True,blank=True,max_length=255,editable=False)
+    total_hits = models.BigIntegerField('Total hits for this poem',default=0,editable=False)
+    verified_content = models.BooleanField(default=True,editable=False)
+
+    NOTIFICATION_CHOICES = (
+        ('ON', 'ON'),
+        ('OFF', 'OFF'),
+    )
+    notification = models.CharField('Allow Notification for this Quote',max_length=10, choices=NOTIFICATION_CHOICES, default='ON')
+
+    PUBLISHED_CONTENT_CHOICES = (
+        ('YES', 'Yes'),
+        ('NO', 'No'),
+    )
+    published_content = models.CharField('Can We Publish This Quote?',help_text="Note: We will not added this quote in your quote list untill you will not select Yes ..!! Important:=> if you published your quote content once then you will not able to change quote content as well delete. For more info you can go through WC Terms & Conditions",max_length=10, choices=PUBLISHED_CONTENT_CHOICES, default='NO')
+    coming_soon = models.CharField(max_length=50,null=True,blank=True,editable=False)
+
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.id)
+    class Meta:
+        verbose_name_plural = 'Add Quotes'
+
+# Quote CONTENT VERIFIED STATUS
+class QuoteContentVerified(models.Model):
+    quote_id = models.CharField(max_length=50)
+    RESION_TYPE = (
+        ('COPYRIGHT', 'Copyright Content'),
+        ('SEXUAL', 'Sexual Content'),
+        ('ACTIVE', 'No Action'),
+    )
+    resion = models.CharField("Take Action",max_length=20, choices=RESION_TYPE, default='ACTIVE')
+    action_taken_by = models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.quote_id
+    class Meta:
+        verbose_name_plural = 'Verify Quotes Content'
 
 
 class AboutUs(models.Model):
