@@ -3,7 +3,6 @@ from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 # Create your models here.
 from colorfield.fields import ColorField
-from colorful.fields import RGBColorField
 
 class UserSignup(models.Model):
     full_name = models.CharField(help_text="you can edit your name",max_length=30)
