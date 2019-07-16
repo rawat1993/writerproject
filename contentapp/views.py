@@ -618,7 +618,18 @@ def poem_story_of_the_week(request):
 
     # Quotes Data for this week
     quotes_queryset = UserQuotes.objects.filter(verified_content=True,published_content='YES').order_by('-updated_at')
-    quotes_data = append_baseUrl(quotes_queryset,"quotes_of_the_week")
+
+    quotes_data = []
+    for quote_obj in quotes_queryset:
+       quote_image = DEFAULT_IMAGE_PATH
+       text_color = quote_obj.text_color
+
+       if quote_obj.quote_image:
+          quote_image = HOST_NAME+"/media/"+str(quote_obj.quote_image)               
+
+       auther_name = UserSignup.objects.get(email=quote_obj.author.email).full_name
+       author_url = UrlPostfixHistory.objects.get(user_email=quote_obj.author.email).url_postfix
+       quotes_data.append({"quote_id":quote_obj.quote_id,"quote_text":quote_obj.content,"quote_image":quote_image,"text_color":text_color,"publish_date":quote_obj.updated_at,"post_fix":author_url,"author_name":auther_name})
 
     return Response({"story_data":story_data,"poem_data":poem_data,"quotes_data":quotes_data,"poem_heading":POEM_HEADING,"poem_subject":POEM_SUBJECT,"story_heading":STORY_HEADING,"story_subject":STORY_SUBJECT,"quotes_heading":QUOTE_HEADING,},status=status.HTTP_200_OK)
 

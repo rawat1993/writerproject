@@ -160,14 +160,19 @@ class UserPoemAdmin(SummernoteModelAdmin):
               obj.save()
            else:   
               url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
-              key = uuid.uuid4()
-              generate_link = VIEW_LINK.format(url_postfix,'poem',key)
-              UserPoem.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
 
-              # create or updating the key
-              admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for='poem')
-              admin_key_obj[0].key = key
-              admin_key_obj[0].save()
+              # get or generate private key for the user
+              try:
+                  admin_key_obj = AdminKeys.objects.get(url_postfix=url_postfix,key_for='poem')
+                  generate_link = VIEW_LINK.format(url_postfix,'poem',admin_key_obj.key)
+              except:
+                  key = uuid.uuid4()
+                  generate_link = VIEW_LINK.format(url_postfix,'poem',key)
+                  admin_key_obj = AdminKeys.objects.create(url_postfix=url_postfix,key_for='poem',key=key)
+                       
+              obj.view_on_website = generate_link
+              obj.save()
+
 
            # Enter data in ContentVerified Table
            try:
@@ -281,14 +286,19 @@ class UserStroyTitleAdmin(SummernoteModelAdmin):
               obj.save()
            else:   
               url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
-              key = uuid.uuid4()
-              generate_link = VIEW_LINK.format(url_postfix,'story',key)
-              UserStoryTitle.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
 
-              # create or updating the key
-              admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for='story')
-              admin_key_obj[0].key = key
-              admin_key_obj[0].save()
+              # get or generate private key for the user
+              try:
+                  admin_key_obj = AdminKeys.objects.get(url_postfix=url_postfix,key_for='story')
+                  generate_link = VIEW_LINK.format(url_postfix,'story',admin_key_obj.key)
+              except:
+                  key = uuid.uuid4()
+                  generate_link = VIEW_LINK.format(url_postfix,'story',key)
+                  admin_key_obj = AdminKeys.objects.create(url_postfix=url_postfix,key_for='story',key=key)
+                       
+              obj.view_on_website = generate_link
+              obj.save()
+
 
            # Enter data in ContentVerified Table
            try:
@@ -424,8 +434,7 @@ admin.site.register(ContentVerified,ContentVerifiedAdmin)
 
 # Registeres Quotes Model
 
-class UserQuotesAdmin(SummernoteModelAdmin):
-    summernote_fields = 'content'
+class UserQuotesAdmin(admin.ModelAdmin):
     list_display = ('quote_id','published_content','view_on_website')
     search_fields = ('id',)
 
@@ -459,14 +468,18 @@ class UserQuotesAdmin(SummernoteModelAdmin):
               obj.save()
            else:   
               url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
-              key = uuid.uuid4()
-              generate_link = VIEW_LINK.format(url_postfix,'quotes',key)
-              UserQuotes.objects.filter(published_content='NO',author=request.user).update(view_on_website=generate_link)
 
-              # create or updating the key
-              admin_key_obj = AdminKeys.objects.get_or_create(url_postfix=url_postfix,key_for='quotes')
-              admin_key_obj[0].key = key
-              admin_key_obj[0].save()
+              # get or generate private key for the user
+              try:
+                  admin_key_obj = AdminKeys.objects.get(url_postfix=url_postfix,key_for='quotes')
+                  generate_link = VIEW_LINK.format(url_postfix,'quotes',admin_key_obj.key)
+              except:
+                  key = uuid.uuid4()
+                  generate_link = VIEW_LINK.format(url_postfix,'quotes',key)
+                  admin_key_obj = AdminKeys.objects.create(url_postfix=url_postfix,key_for='quotes',key=key)
+                       
+              obj.view_on_website = generate_link
+              obj.save()
 
            # Enter data in ContentVerified Table
            try:
@@ -481,6 +494,8 @@ class UserQuotesAdmin(SummernoteModelAdmin):
         # if request.user.is_superuser:
         #     return qs
         return qs.filter(author=request.user)
+
+
 
 user_admin_site.register(UserQuotes,UserQuotesAdmin)
 

@@ -107,9 +107,19 @@ class SubjectView(APIView):
                quotes_list = UserQuotes.objects.filter(Q(author__username=user_email) & Q(verified_content=True) & Q(published_content=by_admin)).order_by('-created_at')
                if not quotes_list:
                   return Response(QUOTES_NOT_AVAILABLE,status=status.HTTP_404_NOT_FOUND)
+   
                page_obj = Paginator(quotes_list, 6)
                requested_page = page_obj.page(requested_page_no)
-               data = append_baseUrl(requested_page,"quotes")
+               
+               data=[]
+               for quote_obj in requested_page:
+                   quote_image = DEFAULT_IMAGE_PATH
+                   text_color = quote_obj.text_color
+
+                   if quote_obj.quote_image:
+                      quote_image = HOST_NAME+"/media/"+str(quote_obj.quote_image)               
+
+                   data.append({"quote_id":quote_obj.quote_id,"quote_text":quote_obj.content,"quote_image":quote_image,"text_color":text_color})
                return Response({"data":data,"total_pages":page_obj.num_pages},status=status.HTTP_200_OK)
 
 
@@ -169,7 +179,16 @@ class TitleView(APIView):
                quotes_list = UserQuotes.objects.filter(Q(author__username=user_email) & (Q(quote_id=str(title)) & Q(verified_content=True) & Q(published_content=by_admin)))
                if not quotes_list:
                   return Response(QUOTES_ID_NOT_FOUND,status=status.HTTP_404_NOT_FOUND)
-               data = append_baseUrl(quotes_list,"quotes")
+
+               data=[]
+               for quote_obj in quotes_list:
+                   quote_image = DEFAULT_IMAGE_PATH
+                   text_color = quote_obj.text_color
+
+                   if quote_obj.quote_image:
+                      quote_image = HOST_NAME+"/media/"+str(quote_obj.quote_image)               
+                   data.append({"quote_id":quote_obj.quote_id,"quote_text":quote_obj.content,"quote_image":quote_image,"text_color":text_color})
+
                return Response({"data":data},status=status.HTTP_200_OK)
 
             return Response(URL_NOT_CORRECT,status=status.HTTP_400_BAD_REQUEST)
@@ -185,10 +204,7 @@ def append_baseUrl(queryset_obj,object_type):
         r = re.compile('(?<=src=").*?(?=")')
         src_list = r.findall(content_data)
 
-        # default image path for Quotes
-        default_image = DEFAULT_IMAGE_PATH
         if src_list:
-           default_image = None
            for src in src_list:
                if src.startswith("/media"):
                   content_data = content_data.replace(
@@ -200,13 +216,7 @@ def append_baseUrl(queryset_obj,object_type):
         elif object_type=="poem":
            updated_list.append({"id":obj.id,"title":obj.title,"short_description":obj.short_description,"content":content_data})
         elif object_type=="about-us":
-           updated_list.append({"content":content_data})
-        elif object_type=="quotes":
-           updated_list.append({"quote_id":obj.quote_id,"content":content_data,"default_image":default_image})
-        elif object_type=="quotes_of_the_week":
-           auther_name = UserSignup.objects.get(email=obj.author.email).full_name
-           author_url = UrlPostfixHistory.objects.get(user_email=obj.author.email).url_postfix
-           updated_list.append({"quote_id":obj.quote_id,"content":content_data,"default_image":default_image,"publish_date":obj.updated_at,"post_fix":author_url,"author_name":auther_name})           
+           updated_list.append({"content":content_data})         
 
 
     return updated_list

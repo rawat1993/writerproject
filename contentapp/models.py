@@ -2,6 +2,8 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 # Create your models here.
+from colorfield.fields import ColorField
+from colorful.fields import RGBColorField
 
 class UserSignup(models.Model):
     full_name = models.CharField(help_text="you can edit your name",max_length=30)
@@ -216,8 +218,10 @@ class UserPoem(models.Model):
 
 class UserQuotes(models.Model):
     quote_id = models.CharField("Your Quote ID",max_length=50,editable=False)
-    author = models.ForeignKey(User, on_delete=models.CASCADE,editable=False)    
-    content = models.TextField('Write Your Quote',help_text='Write your quote content')
+    author = models.ForeignKey(User, on_delete=models.CASCADE,editable=False)
+    quote_image = models.ImageField("Select Quote Image",null=True, blank=True,help_text="If you skip this we will add our image", upload_to="quotes_image/")
+    content = models.TextField('Write Your Quote Text',help_text='You can skip this if you have image with quote text ..! Note: This text will be shown with your selected image',null=True, blank=True)
+    text_color = ColorField("Choose Text Color",default='#FF0000')
     view_on_website = models.URLField("Copy below links in browser to view quote Content",null=True,blank=True,max_length=255,editable=False)
     total_hits = models.BigIntegerField('Total hits for this poem',default=0,editable=False)
     verified_content = models.BooleanField(default=True,editable=False)
@@ -234,7 +238,6 @@ class UserQuotes(models.Model):
     )
     published_content = models.CharField('Can We Publish This Quote?',help_text="Note: We will not added this quote in your quote list untill you will not select Yes ..!! Important:=> if you published your quote content once then you will not able to change quote content as well delete. For more info you can go through WC Terms & Conditions",max_length=10, choices=PUBLISHED_CONTENT_CHOICES, default='NO')
     coming_soon = models.CharField(max_length=50,null=True,blank=True,editable=False)
-
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
