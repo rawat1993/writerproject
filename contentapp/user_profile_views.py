@@ -119,7 +119,7 @@ class SubjectView(APIView):
                    if quote_obj.quote_image:
                       quote_image = HOST_NAME+"/media/"+str(quote_obj.quote_image)               
 
-                   data.append({"quote_id":quote_obj.quote_id,"quote_text":quote_obj.content,"quote_image":quote_image,"text_color":text_color})
+                   data.append({"quote_id":quote_obj.quote_id,"quote_text":quote_obj.content,"quote_image":quote_image,"text_color":text_color,"coming_soon":quote_obj.coming_soon,"updated_at":quote_obj.updated_at})
                return Response({"data":data,"total_pages":page_obj.num_pages},status=status.HTTP_200_OK)
 
 
