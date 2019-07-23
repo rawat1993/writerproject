@@ -130,6 +130,7 @@ class UserPoemAdmin(SummernoteModelAdmin):
     summernote_fields = 'content'
     list_display = ('title','search_by','published_content','view_on_website')
     # readonly_fields = ["published_content"]
+    change_form_template="admin/unique_name_changeform.html"
 
     def has_change_permission(self, request, obj=None):
       if UserPoem.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(published_content='YES')):
@@ -255,7 +256,8 @@ user_admin_site.register(UserBlogTitle,UserBlogTitleAdmin)
 
 class UserStroyTitleAdmin(SummernoteModelAdmin):
     list_display = ('title','search_by','published_content','view_on_website')
-
+    #change_form_template="admin/unique_name_changeform.html" 
+    change_form_template="admin/unique_name_changeform.html"
 
     def has_change_permission(self, request, obj=None):
       if UserStoryTitle.objects.filter(Q(title=obj.__str__()) & Q(author=request.user) & Q(published_content='YES')):
