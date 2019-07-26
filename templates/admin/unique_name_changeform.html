@@ -8,21 +8,21 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.min.js"></script>
 <script>
 	$(document).ready(function(){
-	$('#id_title').on('change',function() {
-	let titleRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
-	let titleVal = $('#id_title').val();
-	$( ".field-title" ).removeClass( "errors" )
- 	$(".errorlist").remove()
-	if(titleRegex.test(titleVal)){
-		var title = $('.field-title');
-		$('.field-title').addClass('errors');
-		$( ".field-title" ).prepend( '<ul class="errorlist"><li>Special Characters not Allowed in Title</li></ul>' );
-	}
-	});
+	// $('#id_title').on('change',function() {
+	// let titleRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+	// let titleVal = $('#id_title').val();
+	// $( ".field-title" ).removeClass( "errors" )
+ // 	$(".errorlist").remove()
+	// if(titleRegex.test(titleVal)){
+	// 	var title = $('.field-title');
+	// 	$('.field-title').addClass('errors');
+	// 	$( ".field-title" ).prepend( '<ul class="errorlist"><li>Special Characters not Allowed in Title</li></ul>' );
+	// }
+	// });
 	$('#userpoem_form').on('submit', function(e) {
-		window.scrollTo(0,0)
-		$( ".field-title" ).removeClass( "errors" )
- 		$(".errorlist").remove()
+		// window.scrollTo(0,0)
+		// $( ".field-title" ).removeClass( "errors" )
+ 	// 	$(".errorlist").remove()
 		//console.log('Caret at: ', e.target.selectionStart)
 		str1=$('#id_title').val();
 		str1 = str1.replace(/(^\s*)|(\s*$)/gi,"");
@@ -30,19 +30,20 @@
 		str1 = str1.replace(/[ ]{2,}/gi," ");
 		$('#id_title').val(str1);
  		
-		let titleRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
-		let titleVal = $('#id_title').val();
-		if(titleRegex.test(titleVal)){
-			e.preventDefault();
-			var title = $('.field-title');
-			$('.field-title').addClass('errors');
-			$( ".field-title" ).prepend( '<ul class="errorlist"><li>Special Characters not Allowed in Title</li></ul>' );
-		}
+		// let titleRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+		// let titleVal = $('#id_title').val();
+		// if(titleRegex.test(titleVal)){
+		// 	e.preventDefault();
+		// 	var title = $('.field-title');
+		// 	$('.field-title').addClass('errors');
+		// 	$( ".field-title" ).prepend( '<ul class="errorlist"><li>Special Characters not Allowed in Title</li></ul>' );
+		// }
 	});
+
 	$('#userstorytitle_form').on('submit', function(e) {
-		//window.scrollTo(0,0)
-		$( ".field-title" ).removeClass( "errors" )
- 		$(".errorlist").remove()
+		// window.scrollTo(0,0)
+		// $( ".field-title" ).removeClass( "errors" )
+ 	// 	$(".errorlist").remove()
 		//console.log('Caret at: ', e.target.selectionStart)
 		str1=$('#id_title').val();
 		str1 = str1.replace(/(^\s*)|(\s*$)/gi,"");
@@ -50,14 +51,14 @@
 		str1 = str1.replace(/[ ]{2,}/gi," ");
 		$('#id_title').val(str1);
  		
-		let titleRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
-		let titleVal = $('#id_title').val();
-		if(titleRegex.test(titleVal)){
-			e.preventDefault();
-			var title = $('.field-title');
-			$('.field-title').addClass('errors');
-			$( ".field-title" ).prepend( '<ul class="errorlist"><li>Special Characters not Allowed in Title</li></ul>' );
-		}
+		// let titleRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+		// let titleVal = $('#id_title').val();
+		// if(titleRegex.test(titleVal)){
+		// 	e.preventDefault();
+		// 	var title = $('.field-title');
+		// 	$('.field-title').addClass('errors');
+		// 	$( ".field-title" ).prepend( '<ul class="errorlist"><li>Special Characters not Allowed in Title</li></ul>' );
+		// }
 	});
 });
 </script>
