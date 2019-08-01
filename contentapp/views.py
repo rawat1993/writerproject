@@ -19,9 +19,8 @@ from django.shortcuts import render_to_response
 from random import randint
 from django.core.paginator import Paginator
 from datetime import datetime
-# from background_task import background
-from contentapp.tasks import sent_notictaion_email_to_author
 import math
+from multiprocessing import Pool
 
 def send_email(subject, send_message, toUser):
     """
@@ -275,9 +274,10 @@ def rating_detail(request):
 
         # sent notification to Author
         try:
-           sent_notictaion_email_to_author(page_type,search_by,name,star_value,page_title)
+            pool = Pool(processes=1)
+            pool.apply_async(sent_notictaion_email_to_author,[page_type,search_by,name,star_value,page_title,])
         except Exception as error:
-           print("heyyyyyyyyyyyyyyyyyyyy=======>",error)
+            pass
 
         return Response(RATING_SAVED.format(page_title.title()), status=status.HTTP_200_OK)
 
@@ -285,25 +285,28 @@ def rating_detail(request):
         print("error---------------",error)
         return Response(OTP_ISSUE, status=status.HTTP_404_NOT_FOUND)
 
-# @background(schedule=60)
-# def sent_notictaion_email_to_author(page_type,search_by,name,star_value,page_title):
-#     print("yessssssssssssssssssssssssssssssssss")
-#     if page_type=="story":
-#         obj = UserStoryTitle.objects.get(search_by=search_by)
-#     elif page_type=="poem":
-#         obj = UserPoem.objects.get(search_by=search_by)
+#@background(schedule=60)
+def sent_notictaion_email_to_author(page_type,search_by,name,star_value,page_title):
+    if page_type=="story":
+        obj = UserStoryTitle.objects.get(search_by=search_by)
+    elif page_type=="poem":
+        obj = UserPoem.objects.get(search_by=search_by)
+    
+    notification_status = obj.notification
+    if notification_status=="ON":
+        try:
+            page_title = page_title.title()
+            name = name.title()
+            first_name = (name.split()[0]).title()
+            author_email = obj.author.email
+            author_name = UserSignup.objects.get(email=author_email).full_name.split()[0]    
+            author_url = UrlPostfixHistory.objects.get(user_email=author_email).url_postfix
 
-#     notification_status = obj.notification
-#     if notification_status=="ON":
-#         page_title = page_title.title()
-#         name = name.title()
-#         first_name = (name.split()[0]).title()
-#         author_email = obj.author.email
-#         author_name = UserSignup.objects.get(email=author_email).full_name.split()[0]    
-#         author_url = UrlPostfixHistory.objects.get(user_email=author_email).url_postfix
-
-#         html_content = render_to_string('mail_template.html', {'var_name': author_name.title(), 'body_content':NOTIFICATION_EMAIL.format(name,page_type,page_title,first_name,star_value), 'terms_conditions':REVIEWER_LINK.format(author_url,page_type,search_by)})
-#         send_email(NOTIFICATION_SUBJECT.format(page_title,name), html_content, [author_email])
+            html_content = render_to_string('mail_template.html', {'var_name': author_name.title(), 'body_content':NOTIFICATION_EMAIL.format(name,page_type,page_title,first_name,star_value), 'terms_conditions':REVIEWER_LINK.format(author_url,page_type,search_by)})
+            
+            send_email(NOTIFICATION_SUBJECT.format(page_title,name), html_content, [author_email])
+        except Exception as e:
+            print("error",e)
 
 
 def insert_star_value(star_value, page_type, search_by):
