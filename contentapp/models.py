@@ -143,7 +143,7 @@ class UserStoryTitle(models.Model):
     overall_rating = models.FloatField(default=0.0,editable=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(null=True,blank=True)
+    updated_at = models.DateTimeField(null=True,blank=True,editable=False)
 
     def __str__(self):
         return self.title
@@ -177,7 +177,7 @@ class UserPoem(models.Model):
     content = models.TextField('Write Your Poem',help_text='Write your poem using images')
     view_on_website = models.URLField("Copy below links in browser to view poem Content",null=True,blank=True,max_length=255,editable=False)
     total_hits = models.BigIntegerField('Total hits for this poem',default=0,editable=False)
-    verified_content = models.BooleanField(default=True,editable=False)
+    verified_content = models.BooleanField(default=True,editable=False,editable=False)
 
     NOTIFICATION_CHOICES = (
         ('ON', 'ON'),
@@ -239,7 +239,7 @@ class UserQuotes(models.Model):
     coming_soon = models.CharField(max_length=50,null=True,blank=True,editable=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(null=True,blank=True)
+    updated_at = models.DateTimeField(null=True,blank=True,editable=False)
 
     def __str__(self):
         return str(self.id)
