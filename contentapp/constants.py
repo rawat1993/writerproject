@@ -1,6 +1,7 @@
 #######################################################
 # Website link to generate view link
 VIEW_LINK = "http://writercreativity.com/{}/{}/?key={}"
+VERIFY_PUBLISHED_DATA_LINK = "http://writercreativity.com/{}/{}/{}"
 
 ####################################################
 

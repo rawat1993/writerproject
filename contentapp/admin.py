@@ -9,7 +9,7 @@ from datetime import datetime
 from django.template.loader import render_to_string
 from django.db.models import Q
 import uuid
-
+from .tasks import *
 
 # Register your models here.
 
@@ -160,6 +160,16 @@ class UserPoemAdmin(SummernoteModelAdmin):
               obj.coming_soon = ""
               obj.updated_at = datetime.now()
               obj.save()
+
+              url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
+              generate_link = VERIFY_PUBLISHED_DATA_LINK.format(url_postfix,'poem',obj.search_by)
+
+              # sent notification to WC Team
+              try:
+                  sent_notification_email_to_WC.delay(generate_link)
+              except Exception as error:
+                  print(error)
+
            else:   
               url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
 
@@ -288,6 +298,16 @@ class UserStroyTitleAdmin(SummernoteModelAdmin):
               obj.coming_soon = ""
               obj.updated_at = datetime.now()
               obj.save()
+
+              url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
+              generate_link = VERIFY_PUBLISHED_DATA_LINK.format(url_postfix,'story',obj.search_by)
+
+              # sent notification to WC Team
+              try:
+                  sent_notification_email_to_WC.delay(generate_link)
+              except Exception as error:
+                  print(error)
+
            else:   
               url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
 
@@ -471,6 +491,16 @@ class UserQuotesAdmin(admin.ModelAdmin):
               obj.coming_soon = ""
               obj.updated_at = datetime.now()
               obj.save()
+
+              url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
+              generate_link = VERIFY_PUBLISHED_DATA_LINK.format(url_postfix,'quotes',obj.id)
+
+              # sent notification to WC Team
+              try:
+                  sent_notification_email_to_WC.delay(generate_link)
+              except Exception as error:
+                  print(error)
+
            else:   
               url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
 

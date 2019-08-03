@@ -18,7 +18,6 @@ def send_email(subject, send_message, toUser):
 
 @app.task
 def sent_notictaion_email_to_author(page_type,search_by,name,star_value,page_title):
-    print("dsfsdfds")
     if page_type=="story":
         obj = UserStoryTitle.objects.get(search_by=search_by)
     elif page_type=="poem":
@@ -39,3 +38,10 @@ def sent_notictaion_email_to_author(page_type,search_by,name,star_value,page_tit
             send_email(NOTIFICATION_SUBJECT.format(page_title,name), html_content, [author_email])
         except Exception as e:
             print("error",e)
+
+@app.task
+def sent_notification_email_to_WC(published_content):
+        try:
+            send_email("Please Verify Published Data", published_content, ["rawatajay977@gmail.com"])
+        except Exception as e:
+            pass
