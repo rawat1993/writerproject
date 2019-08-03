@@ -158,6 +158,7 @@ class UserPoemAdmin(SummernoteModelAdmin):
            if obj.published_content=='YES':
               obj.view_on_website = ""
               obj.coming_soon = ""
+              obj.updated_at = datetime.now()
               obj.save()
            else:   
               url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
@@ -285,6 +286,7 @@ class UserStroyTitleAdmin(SummernoteModelAdmin):
            if obj.published_content=='YES':
               obj.view_on_website = ""
               obj.coming_soon = ""
+              obj.updated_at = datetime.now()
               obj.save()
            else:   
               url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix
@@ -467,6 +469,7 @@ class UserQuotesAdmin(admin.ModelAdmin):
            if obj.published_content=='YES':
               obj.view_on_website = ""
               obj.coming_soon = ""
+              obj.updated_at = datetime.now()
               obj.save()
            else:   
               url_postfix = UrlPostfixHistory.objects.get(user_email=request.user.email).url_postfix

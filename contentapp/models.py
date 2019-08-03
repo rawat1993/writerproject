@@ -143,7 +143,7 @@ class UserStoryTitle(models.Model):
     overall_rating = models.FloatField(default=0.0,editable=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(null=True,blank=True)
 
     def __str__(self):
         return self.title
@@ -207,7 +207,7 @@ class UserPoem(models.Model):
     overall_rating = models.FloatField(default=0.0,editable=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(null=True,blank=True)
 
     def __str__(self):
         return self.title
@@ -239,7 +239,7 @@ class UserQuotes(models.Model):
     coming_soon = models.CharField(max_length=50,null=True,blank=True,editable=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(null=True,blank=True)
 
     def __str__(self):
         return str(self.id)
