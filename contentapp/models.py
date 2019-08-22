@@ -218,7 +218,7 @@ class UserPoem(models.Model):
 class UserQuotes(models.Model):
     quote_id = models.CharField("Your Quote ID",max_length=50,editable=False)
     author = models.ForeignKey(User, on_delete=models.CASCADE,editable=False)
-    quote_image = models.ImageField("Select Quote Image",null=True, blank=True,help_text="If you skip this we will add our image", upload_to="quotes_image/")
+    quote_image = models.ImageField("Select Quote Image",null=True, blank=True,help_text="If you skip this we will add our image ..! Image size should be 500 height and 300 width", upload_to="quotes_image/")
     content = models.TextField('Write Your Quote Text',help_text='You can skip this if you have image with quote text ..! Note: This text will be shown with your selected image',null=True, blank=True)
     text_color = ColorField("Choose Text Color",default='#FF0000')
     view_on_website = models.URLField("Copy below links in browser to view quote Content",null=True,blank=True,max_length=255,editable=False)
