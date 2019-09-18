@@ -494,23 +494,6 @@ def top_writers_list(request):
                   user_photo = HOST_NAME+"/media/"+str(user_obj.user_photo)
               data.append({"name":user_obj.full_name,"user_photo":user_photo,"url_postfix":url_postfix})
 
-              # for testing pagination functionality will remove later
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-              data.append({"name":user_obj.full_name,"user_photo":user_photo})
-
-
           if writer_search:
             data = [element for element in data if element['name'].lower().startswith(writer_search.lower())]
 

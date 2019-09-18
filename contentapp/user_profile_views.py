@@ -125,6 +125,7 @@ class SubjectView(APIView):
 
             return Response(URL_NOT_CORRECT,status=status.HTTP_400_BAD_REQUEST)
         except Exception as error:
+            print("------------------>",error)
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class TitleView(APIView):
